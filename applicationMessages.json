@@ -1,0 +1,14 @@
+{
+  "authentication": {
+    "login": {
+      "noEmailOrPass": {
+        "message": "Please enter an email or password",
+        "statusCode": 404
+      },
+      "incorrectCredentials": {
+        "message": "Incorrect email or password",
+        "statusCode": 404
+      }
+    }
+  }
+}
