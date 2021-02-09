@@ -4,6 +4,7 @@ const env = process.env.NODE_ENV;
 const dev = {
   app: {
     port: parseInt(process.env.DEV_APP_PORT) || 5000,
+    url: process.env.FRONT_END_DEV,
   },
   db: {
     /*
