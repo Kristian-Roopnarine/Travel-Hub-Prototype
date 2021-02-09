@@ -9,6 +9,22 @@
         "message": "Incorrect email or password",
         "statusCode": 404
       }
+    },
+    "sendResetEmail": {
+      "userNotFound": {
+        "message": "User with that email does not exist",
+        "statusCode": 404
+      },
+      "sendError": {
+        "message": "There was an error sending the email. Try again later.",
+        "statusCode": 500
+      }
+    },
+    "resetPassword": {
+      "tokenExpiredOrInvalid": {
+        "message": "Token is expired or invalid",
+        "statusCode": 400
+      }
     }
   }
 }
