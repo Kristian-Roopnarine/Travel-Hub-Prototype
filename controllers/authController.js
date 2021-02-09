@@ -55,8 +55,13 @@ exports.sendPassResetEmail = asyncCatchWrapper(async (req, res, next) => {
   // find user
   const user = await Users.findOne({ email: email });
   // if not user
-  if (!user)
-    return next(new AppError('User with that email does not exist', 404));
+  if (!user) {
+    const {
+      message,
+      statusCode,
+    } = appMessages.authentication.sendResetEmail.userNotFound;
+    return next(new AppError(message, statusCode));
+  }
   // send response
 
   // create reset token
@@ -77,12 +82,11 @@ exports.sendPassResetEmail = asyncCatchWrapper(async (req, res, next) => {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save();
-    return next(
-      new AppError(
-        'There was an error sending the email. Try again later!',
-        500
-      )
-    );
+    const {
+      message,
+      statusCode,
+    } = appMessages.authentication.sendResetEmail.sendError;
+    return next(new AppError(message, statusCode));
   }
 
   res.status(200).json({
@@ -96,12 +100,16 @@ exports.sendPassResetEmail = asyncCatchWrapper(async (req, res, next) => {
 exports.resetPassword = asyncCatchWrapper(async (req, res, next) => {
   const { token } = req.body;
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-  const user = await Users.find({
+  const user = await Users.findOne({
     passwordResetToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() },
   });
   if (!user) {
-    return next(new AppError('Token is invalid or expired', 400));
+    const {
+      message,
+      statusCode,
+    } = appMessages.authentication.resetPassword.tokenExpiredOrInvalid;
+    return next(new AppError(message, statusCode));
   }
   const { password, passwordConfirm } = req.body;
   user.password = password;
