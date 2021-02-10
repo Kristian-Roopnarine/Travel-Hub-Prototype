@@ -25,6 +25,12 @@
         "message": "Token is expired or invalid",
         "statusCode": 400
       }
+    },
+    "jwt": {
+      "noToken": {
+        "message": "You are not logged in! Please login to access this feature",
+        "statusCode": 401
+      }
     }
   }
 }
