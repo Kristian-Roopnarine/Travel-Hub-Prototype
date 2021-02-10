@@ -5,6 +5,7 @@ const AppError = require('./utils/appError');
 const morgan = require('morgan');
 
 const authRouter = require('./routes/authRoutes');
+const { protect } = require('./controllers/authController');
 
 app.use(express.json());
 app.use(morgan('dev'));
@@ -13,6 +14,12 @@ app.get('/', (req, res, next) => {
   res.status(200).json({
     status: 'Success',
     message: 'App running',
+  });
+});
+app.get('/test-jwt', protect, (req, res, next) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Your jwt is valid',
   });
 });
 app.use('/api/v1/auth', authRouter);
