@@ -1,4 +1,3 @@
-const jwt = require('jwt');
 const Itineraries = require('./../models/itinerarySchema');
 const AppError = require('./../utils/appError');
 const asyncCatchWrapper = require('./../utils/asyncCatchWrapper');
@@ -7,11 +6,11 @@ const config = require('./../config');
 
 // create itinerary
 exports.createItinerary = asyncCatchWrapper(async (req, res, next) => {
-  // need to get user id here
-  // from jwt
+  const { _id } = req.user;
+  console.log({ _id });
   const { body } = req;
-  const itinerary = await Itineraries.create(body);
-  res.send(201).json({
+  const itinerary = await Itineraries.create({ creator: _id, ...body });
+  res.status(201).json({
     status: 'created',
     data: itinerary,
   });

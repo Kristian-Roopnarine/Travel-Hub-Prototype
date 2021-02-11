@@ -22,8 +22,6 @@ async function addTestUser() {
   });
 }
 
-function getJWT() {}
-
 beforeEach((done) => {
   mongoose.connect(config.db.url, { useNewUrlParser: true }, () => done());
 });
