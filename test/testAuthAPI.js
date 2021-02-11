@@ -22,6 +22,8 @@ async function addTestUser() {
   });
 }
 
+function getJWT() {}
+
 beforeEach((done) => {
   mongoose.connect(config.db.url, { useNewUrlParser: true }, () => done());
 });
@@ -91,5 +93,23 @@ describe('Auth API', function () {
       .send(info)
       //.expect({ message: message })
       .expect(statusCode, { message: message, status: 'fail' }, done);
+  });
+
+  it('/jwt-test should return 200 if accessed with JWT', function (done) {
+    const info = {
+      email: 'bob@gmail.com',
+      password: '123',
+    };
+    request(app)
+      .post(`${authURL}${loginURL}`)
+      .send(info)
+      .then((response) => {
+        const { token } = response.data;
+        request(app).get('/test-jwt').expect(200, done);
+      });
+    done();
+  });
+  it('/jwt-test should return 401 if not accessed with JWT', function (done) {
+    request(app).get('/test-jwt').expect(401, done);
   });
 });
