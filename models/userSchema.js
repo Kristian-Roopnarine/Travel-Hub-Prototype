@@ -78,7 +78,6 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     this.passwordLastChangedAt.getTime() / 1000,
     10
   );
-  console.log(changedTimestamp, JWTTimestamp);
   return JWTTimestamp < changedTimestamp;
 };
 const Users = mongoose.model('Users', userSchema);
