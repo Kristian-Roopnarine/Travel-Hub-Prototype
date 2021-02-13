@@ -32,5 +32,21 @@
         "statusCode": 401
       }
     }
+  },
+  "itinerary": {
+    "permissions": {
+      "notAuthorized": {
+        "message": "You are not authorized to perform this action",
+        "statusCode": 401
+      }
+    },
+    "update": {
+      "success": {
+        "addMembers": {
+          "message": "Added members to your itinerary",
+          "statusCode": 202
+        }
+      }
+    }
   }
 }
