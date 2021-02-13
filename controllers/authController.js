@@ -79,7 +79,6 @@ exports.sendPassResetEmail = asyncCatchWrapper(async (req, res, next) => {
       message,
     });
   } catch (err) {
-    console.log(err);
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save();
@@ -130,7 +129,6 @@ exports.protect = asyncCatchWrapper(async (req, res, next) => {
   ) {
     token = req.headers.authorization.split(' ')[1];
   }
-  console.log(token);
   if (!token) {
     const { message, statusCode } = appMessages.authentication.jwt.noToken;
     return next(new AppError(message, statusCode));
