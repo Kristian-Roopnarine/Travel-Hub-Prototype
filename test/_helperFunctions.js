@@ -29,3 +29,11 @@ exports.getJWT = async function (email = 'bob@gmail.com', password = '123') {
     .post('/api/v1/auth/login')
     .send({ email, password });
 };
+
+exports.getItinerary = async function () {
+  return await Itineraries.findOne({ title: 'This is a test title' }).exec();
+};
+
+exports.getUserByEmail = async function (email) {
+  return await Users.findOne({ email }).exec();
+};
