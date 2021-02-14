@@ -2,25 +2,35 @@ const Itineraries = require('./../models/itinerarySchema');
 const AppError = require('./../utils/appError');
 const asyncCatchWrapper = require('./../utils/asyncCatchWrapper');
 const appMessages = require('./../applicationMessages.json');
-const config = require('./../config');
+
 const factory = require('./handlerFactory');
 
 // create itinerary
-exports.createItinerary = asyncCatchWrapper(async (req, res, next) => {
-  const { _id } = req.user;
-  const { body } = req;
-  const itinerary = await Itineraries.create({ creator: _id, ...body });
-  res.status(201).json({
-    status: 'created',
+exports.createItinerary = factory.createOne(Itineraries);
+exports.getItinerary = asyncCatchWrapper(async (req, res, next) => {
+  const { id } = req.params;
+  const itinerary = await Itineraries.findById(id).exec();
+  if (!itinerary) {
+    const { message, statusCode } = appMessages.itinerary.doesNotExist;
+    return next(new AppError(message, statusCode));
+  }
+  res.status(200).json({
     data: itinerary,
   });
 });
 
-exports.getItinerary = asyncCatchWrapper(async (req, res, next) => {
+exports.deleteItinerary = factory.deleteOne(Itineraries);
+
+exports.getAllMembers = asyncCatchWrapper(async (req, res, next) => {
   const { id } = req.params;
-  const itinerary = await Itineraries.findById(id);
+  const itinerary = await Itineraries.findById(id).exec();
+  if (!itinerary) {
+    const { message, statusCode } = appMessages.itinerary.doesNotExist;
+    return next(new AppError(message, statusCode));
+  }
+  console.log(itinerary.members);
   res.status(200).json({
-    data: itinerary,
+    data: itinerary.members,
   });
 });
 
@@ -34,6 +44,7 @@ exports.addMember = asyncCatchWrapper(async (req, res, next) => {
     { $push: { members: members } },
     { upsert: true, new: true, save: true }
   );
+
   const {
     message,
     statusCode,
@@ -46,4 +57,16 @@ exports.addMember = asyncCatchWrapper(async (req, res, next) => {
   });
 });
 
-exports.deleteItinerary = factory.deleteOne(Itineraries);
+exports.deleteMember = asyncCatchWrapper(async (req, res, next) => {
+  // check if user is the owner
+  const { id, memId } = req.params;
+  // member id is sent
+  await Itineraries.findByIdAndUpdate(id, {
+    $pull: { members: memId },
+  });
+
+  res.status(204).json({
+    status: 'deleted',
+    data: null,
+  });
+});
