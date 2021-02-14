@@ -47,6 +47,16 @@
           "statusCode": 202
         }
       }
+    },
+    "doesNotExist": {
+      "message": "Itinerary does not exist",
+      "statusCode": 404
+    }
+  },
+  "users": {
+    "doesNotExist": {
+      "message": "Error finding User",
+      "statusCode": 404
     }
   }
 }
