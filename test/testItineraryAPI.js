@@ -9,6 +9,7 @@ const Itineraries = require('./../models/itinerarySchema');
 const app = require('./../app');
 const appMessages = require('./../applicationMessages.json');
 const helpFunc = require('./_helperFunctions');
+
 const itineraryApi = '/api/v1/itinerary';
 
 var token = null;
@@ -30,8 +31,8 @@ describe('#ItineraryAPI', function () {
       .post(`${itineraryApi}/`)
       .set('Authorization', 'Bearer ' + token)
       .send({ title: 'This is a test' });
-    const { body } = response;
-    expect(body.title).to.equal('This is a test');
+    const { data } = response.body;
+    expect(data.title).to.equal('This is a test');
     expect(response.status).to.equal(201);
   });
 
@@ -40,12 +41,22 @@ describe('#ItineraryAPI', function () {
       title: 'This is a test title',
     }).exec();
     const response = await request(app).get(`${itineraryApi}/${itinerary._id}`);
-    const { body } = response;
+    const { data } = response.body;
     expect(response.status).to.equal(200);
-    expect(body.title).to.equal('This is a test title');
+    expect(data.title).to.equal('This is a test title');
   });
 
-  it('POST /:id/members should return 204 on successfully adding a new member to itinerary', async function () {
+  it('DELETE /:id should return 200 after deleting itinerary', async function () {
+    const itinerary = await Itineraries.findOne({
+      title: 'This is a test title',
+    }).exec();
+    await request(app)
+      .delete(`${itineraryApi}/${itinerary._id}`)
+      .set('Authorization', 'Bearer ' + token)
+      .expect(204);
+  });
+
+  it('POST /:id/members should return 2022 on successfully adding a new member to itinerary', async function () {
     const member = await Users.findOne({ email: 'bob2@gmail.com' }).exec();
     const itinerary = await Itineraries.findOne({
       title: 'This is a test title',
@@ -59,10 +70,10 @@ describe('#ItineraryAPI', function () {
       .post(url)
       .set('Authorization', 'Bearer ' + token)
       .send({ members: [member._id] });
-    const { body } = response;
+    const { data } = response.body;
     expect(response.status).to.equal(statusCode);
-    expect(body.message).to.equal(message);
-    expect(body.data.members.length).to.equal(1);
+    expect(response.body.message).to.equal(message);
+    expect(data.members.length).to.equal(1);
   });
 
   it('POST /:id/members should return 401 when unauthorized user tries to add members to itinerary', async function () {

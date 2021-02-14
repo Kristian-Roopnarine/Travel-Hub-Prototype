@@ -3,6 +3,7 @@ const AppError = require('./../utils/appError');
 const asyncCatchWrapper = require('./../utils/asyncCatchWrapper');
 const appMessages = require('./../applicationMessages.json');
 const config = require('./../config');
+const factory = require('./handlerFactory');
 
 // create itinerary
 exports.createItinerary = asyncCatchWrapper(async (req, res, next) => {
@@ -43,5 +44,6 @@ exports.addMember = asyncCatchWrapper(async (req, res, next) => {
     message,
     data: itinerary,
   });
-  console.log(res.body);
 });
+
+exports.deleteItinerary = factory.deleteOne(Itineraries);
