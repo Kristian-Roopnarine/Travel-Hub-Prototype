@@ -4,7 +4,8 @@ const AppError = require('./../utils/appError');
 const Users = require('./../models/userSchema');
 const asyncCatchWrapper = require('./../utils/asyncCatchWrapper');
 const crypto = require('crypto');
-const appMessages = require('./../applicationMessages.json');
+const authMessages = require('./../appMessages/authentication.json');
+const permissionMessages = require('./../appMessages/permissions.json');
 const config = require('./../config');
 const sendEmail = require('./../utils/email');
 
@@ -31,19 +32,13 @@ exports.signup = asyncCatchWrapper(async (req, res, next) => {
 exports.login = asyncCatchWrapper(async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    const {
-      message,
-      statusCode,
-    } = appMessages.authentication.login.noEmailOrPass;
+    const { message, statusCode } = authMessages.login.noEmailOrPass;
     return next(new AppError(message, statusCode));
   }
   const user = await Users.findOne({ email: email }).select('+password');
 
   if (!user || !(await user.isPasswordCorrect(password, user.password))) {
-    const {
-      message,
-      statusCode,
-    } = appMessages.authentication.login.incorrectCredentials;
+    const { message, statusCode } = authMessages.login.incorrectCredentials;
     return next(new AppError(message, statusCode));
   }
   createSendToken(user, 200, res);
@@ -57,10 +52,7 @@ exports.sendPassResetEmail = asyncCatchWrapper(async (req, res, next) => {
   const user = await Users.findOne({ email: email });
   // if not user
   if (!user) {
-    const {
-      message,
-      statusCode,
-    } = appMessages.authentication.sendResetEmail.userNotFound;
+    const { message, statusCode } = authMessages.sendResetEmail.userNotFound;
     return next(new AppError(message, statusCode));
   }
   // send response
@@ -82,10 +74,7 @@ exports.sendPassResetEmail = asyncCatchWrapper(async (req, res, next) => {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save();
-    const {
-      message,
-      statusCode,
-    } = appMessages.authentication.sendResetEmail.sendError;
+    const { message, statusCode } = authMessages.sendResetEmail.sendError;
     return next(new AppError(message, statusCode));
   }
 
@@ -108,7 +97,7 @@ exports.resetPassword = asyncCatchWrapper(async (req, res, next) => {
     const {
       message,
       statusCode,
-    } = appMessages.authentication.resetPassword.tokenExpiredOrInvalid;
+    } = authMessages.resetPassword.tokenExpiredOrInvalid;
     return next(new AppError(message, statusCode));
   }
   const { password, passwordConfirm } = req.body;
@@ -130,7 +119,7 @@ exports.protect = asyncCatchWrapper(async (req, res, next) => {
     token = req.headers.authorization.split(' ')[1];
   }
   if (!token) {
-    const { message, statusCode } = appMessages.authentication.jwt.noToken;
+    const { message, statusCode } = permissionMessages.jwt.noToken;
     return next(new AppError(message, statusCode));
   }
   // verification

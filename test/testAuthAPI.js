@@ -7,7 +7,7 @@ const should = chai.should();
 const mongoose = require('mongoose');
 const Users = require('./../models/userSchema');
 const app = require('./../app');
-const appMessages = require('./../applicationMessages.json');
+const authMessages = require('./../appMessages/authentication.json');
 const authURL = '/api/v1/auth';
 const signupURL = '/signup';
 const loginURL = '/login';
@@ -60,10 +60,7 @@ describe('Auth API', function () {
     const info = {
       password: '123',
     };
-    const {
-      message,
-      statusCode,
-    } = appMessages.authentication.login.noEmailOrPass;
+    const { message, statusCode } = authMessages.login.noEmailOrPass;
     request(app)
       .post(`${authURL}${loginURL}`)
       .send(info)
@@ -74,14 +71,10 @@ describe('Auth API', function () {
     const info = {
       email: 'bob@gmail.com',
     };
-    const {
-      message,
-      statusCode,
-    } = appMessages.authentication.login.noEmailOrPass;
+    const { message, statusCode } = authMessages.login.noEmailOrPass;
     request(app)
       .post(`${authURL}${loginURL}`)
       .send(info)
-      //.expect({ message: message })
       .expect(statusCode, { message: message, status: 'fail' }, done);
   });
 

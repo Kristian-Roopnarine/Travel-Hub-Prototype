@@ -1,0 +1,12 @@
+{
+  "jwt": {
+    "noToken": {
+      "message": "You are not logged in! Please login to access this feature",
+      "statusCode": 401
+    }
+  },
+  "notAuthorized": {
+    "message": "You are not authorized to perform this action",
+    "statusCode": 401
+  }
+}

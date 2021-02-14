@@ -1,8 +1,7 @@
 const Itineraries = require('./../models/itinerarySchema');
 const AppError = require('./../utils/appError');
 const asyncCatchWrapper = require('./../utils/asyncCatchWrapper');
-const appMessages = require('./../applicationMessages.json');
-
+const itineraryMessages = require('./../appMessages/itinerary.json');
 const factory = require('./handlerFactory');
 
 // create itinerary
@@ -11,7 +10,7 @@ exports.getItinerary = asyncCatchWrapper(async (req, res, next) => {
   const { id } = req.params;
   const itinerary = await Itineraries.findById(id).exec();
   if (!itinerary) {
-    const { message, statusCode } = appMessages.itinerary.doesNotExist;
+    const { message, statusCode } = itineraryMessages.doesNotExist;
     return next(new AppError(message, statusCode));
   }
   res.status(200).json({
@@ -25,7 +24,7 @@ exports.getAllMembers = asyncCatchWrapper(async (req, res, next) => {
   const { id } = req.params;
   const itinerary = await Itineraries.findById(id).exec();
   if (!itinerary) {
-    const { message, statusCode } = appMessages.itinerary.doesNotExist;
+    const { message, statusCode } = itineraryMessages.doesNotExist;
     return next(new AppError(message, statusCode));
   }
   console.log(itinerary.members);
@@ -45,10 +44,7 @@ exports.addMember = asyncCatchWrapper(async (req, res, next) => {
     { upsert: true, new: true, save: true }
   );
 
-  const {
-    message,
-    statusCode,
-  } = appMessages.itinerary.update.success.addMembers;
+  const { message, statusCode } = itineraryMessages.addMembers.success;
 
   res.status(statusCode).json({
     status: 'success',

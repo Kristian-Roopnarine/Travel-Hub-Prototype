@@ -1,0 +1,6 @@
+{
+  "doesNotExist": {
+    "message": "Error finding User",
+    "statusCode": 404
+  }
+}
