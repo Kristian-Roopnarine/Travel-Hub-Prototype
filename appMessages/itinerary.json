@@ -1,0 +1,32 @@
+{
+  "createOne": {
+    "success": {
+      "message": "Created your itinerary",
+      "statusCode": 202
+    },
+    "fail": {
+      "message": "Error creating your itinerary",
+      "statusCode": 500
+    }
+  },
+  "getOne": {
+    "fail": {
+      "message": "There was an error retreiving that Itinerary",
+      "statusCode": 500
+    }
+  },
+  "doesNotExist": {
+    "message": "Itinerary does not exist",
+    "statusCode": 404
+  },
+  "addMembers": {
+    "success": {
+      "message": "Added members to your itinerary",
+      "statusCode": 202
+    },
+    "fail": {
+      "message": "Could not add members to your itinerary",
+      "statusCode": 500
+    }
+  }
+}

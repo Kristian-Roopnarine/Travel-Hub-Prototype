@@ -7,7 +7,10 @@ const expect = chai.expect;
 const Users = require('./../models/userSchema');
 const Itineraries = require('./../models/itinerarySchema');
 const app = require('./../app');
-const appMessages = require('./../applicationMessages.json');
+const authMessages = require('./../appMessages/authentication.json');
+const permissionMessages = require('./../appMessages/permissions.json');
+const itineraryMessages = require('./../appMessages/itinerary.json');
+const userMessages = require('./../appMessages/user.json');
 const helpFunc = require('./_helperFunctions');
 const mongoose = require('mongoose');
 
@@ -74,7 +77,7 @@ describe('#ItineraryAPI', function () {
     const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
     const response = await getWithAuthentication(`${itineraryApi}/${id}`);
     const { body } = response;
-    const { message, statusCode } = appMessages.itinerary.doesNotExist;
+    const { message, statusCode } = itineraryMessages.doesNotExist;
     expect(response.status).to.equal(statusCode);
     expect(body.message).to.equal(message);
   });
@@ -91,7 +94,7 @@ describe('#ItineraryAPI', function () {
     const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
     const response = await deleteWithAuthentication(`${itineraryApi}/${id}`);
     const { body } = response;
-    const { message, statusCode } = appMessages.itinerary.doesNotExist;
+    const { message, statusCode } = itineraryMessages.doesNotExist;
     expect(response.status).to.equal(statusCode);
     expect(body.message).to.equal(message);
   });
@@ -109,7 +112,7 @@ describe('#ItineraryAPI', function () {
     var url = `${itineraryApi}/${id}/members`;
     const response = await getWithAuthentication(url);
     const { body } = response;
-    const { message, statusCode } = appMessages.itinerary.doesNotExist;
+    const { message, statusCode } = itineraryMessages.doesNotExist;
     expect(response.status).to.equal(statusCode);
     expect(body.message).to.equal(message);
   });
@@ -122,10 +125,7 @@ describe('#ItineraryAPI', function () {
       members: [member._id],
     });
     const { data } = response.body;
-    const {
-      message,
-      statusCode,
-    } = appMessages.itinerary.update.success.addMembers;
+    const { message, statusCode } = itineraryMessages.addMembers.success;
     expect(response.status).to.equal(statusCode);
     expect(response.body.message).to.equal(message);
     expect(data.members.length).to.equal(1);
@@ -151,10 +151,7 @@ describe('#ItineraryAPI', function () {
       members: [member._id, member2._id, member3._id, member4._id],
     });
     const { data } = response.body;
-    const {
-      message,
-      statusCode,
-    } = appMessages.itinerary.update.success.addMembers;
+    const { message, statusCode } = itineraryMessages.addMembers.success;
     expect(response.status).to.equal(statusCode);
     expect(response.body.message).to.equal(message);
     expect(data.members.length).to.equal(4);
@@ -170,7 +167,7 @@ describe('#ItineraryAPI', function () {
       }
     );
     const { body } = response;
-    const { message, statusCode } = appMessages.itinerary.doesNotExist;
+    const { message, statusCode } = itineraryMessages.doesNotExist;
     expect(response.status).to.equal(statusCode);
     expect(body.message).to.equal(message);
   });
@@ -181,10 +178,7 @@ describe('#ItineraryAPI', function () {
     // find the itinerary id to send to the backend
     const itinerary = await helpFunc.getItinerary();
     var url = `${itineraryApi}/${itinerary._id}/members`;
-    const {
-      message,
-      statusCode,
-    } = appMessages.itinerary.permissions.notAuthorized;
+    const { message, statusCode } = permissionMessages.notAuthorized;
     const member = await helpFunc.getUserByEmail('bob@gmail.com');
     const res = await postWithAuthentication(url, {
       members: [member._id],
@@ -209,7 +203,7 @@ describe('#ItineraryAPI', function () {
     var url = `${itineraryApi}/${id}/members/${member._id}`;
     const response = await deleteWithAuthentication(url);
     const { body } = response;
-    const { message, statusCode } = appMessages.itinerary.doesNotExist;
+    const { message, statusCode } = itineraryMessages.doesNotExist;
     expect(response.status).to.equal(statusCode);
     expect(body.message).to.equal(message);
   });
@@ -219,7 +213,7 @@ describe('#ItineraryAPI', function () {
     var url = `${itineraryApi}/${itinerary._id}/members/${id}`;
     const response = await deleteWithAuthentication(url);
     const { body } = response;
-    const { message, statusCode } = appMessages.users.doesNotExist;
+    const { message, statusCode } = userMessages.doesNotExist;
     expect(response.status).to.equal(statusCode);
     expect(body.message).to.equal(message);
   });
