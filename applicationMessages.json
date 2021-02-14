@@ -25,6 +25,38 @@
         "message": "Token is expired or invalid",
         "statusCode": 400
       }
+    },
+    "jwt": {
+      "noToken": {
+        "message": "You are not logged in! Please login to access this feature",
+        "statusCode": 401
+      }
+    }
+  },
+  "itinerary": {
+    "permissions": {
+      "notAuthorized": {
+        "message": "You are not authorized to perform this action",
+        "statusCode": 401
+      }
+    },
+    "update": {
+      "success": {
+        "addMembers": {
+          "message": "Added members to your itinerary",
+          "statusCode": 202
+        }
+      }
+    },
+    "doesNotExist": {
+      "message": "Itinerary does not exist",
+      "statusCode": 404
+    }
+  },
+  "users": {
+    "doesNotExist": {
+      "message": "Error finding User",
+      "statusCode": 404
     }
   }
 }

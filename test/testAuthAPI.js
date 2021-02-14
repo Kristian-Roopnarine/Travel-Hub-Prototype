@@ -12,15 +12,7 @@ const authURL = '/api/v1/auth';
 const signupURL = '/signup';
 const loginURL = '/login';
 
-async function addTestUser() {
-  return await Users.create({
-    firstName: 'bob',
-    lastName: 'bob',
-    email: 'bob@gmail.com',
-    password: '123',
-    passwordConfirm: '123',
-  });
-}
+const helperFunc = require('./_helperFunctions');
 
 beforeEach((done) => {
   mongoose.connect(config.db.url, { useNewUrlParser: true }, () => done());
@@ -34,7 +26,7 @@ afterEach((done) => {
 describe('Auth API', function () {
   beforeEach(async function () {
     await Users.deleteMany({});
-    return addTestUser();
+    return helperFunc.addTestUser();
   });
 
   it('/signup should return 201 on successful creation', function (done) {
@@ -91,5 +83,23 @@ describe('Auth API', function () {
       .send(info)
       //.expect({ message: message })
       .expect(statusCode, { message: message, status: 'fail' }, done);
+  });
+
+  it('/jwt-test should return 200 if accessed with JWT', function (done) {
+    const info = {
+      email: 'bob@gmail.com',
+      password: '123',
+    };
+    request(app)
+      .post(`${authURL}${loginURL}`)
+      .send(info)
+      .then((response) => {
+        const { token } = response.data;
+        request(app).get('/test-jwt').expect(200, done);
+      });
+    done();
+  });
+  it('/jwt-test should return 401 if not accessed with JWT', function (done) {
+    request(app).get('/test-jwt').expect(401, done);
   });
 });

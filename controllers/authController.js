@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { promisify } = require('util');
 const AppError = require('./../utils/appError');
 const Users = require('./../models/userSchema');
 const asyncCatchWrapper = require('./../utils/asyncCatchWrapper');
@@ -78,7 +79,6 @@ exports.sendPassResetEmail = asyncCatchWrapper(async (req, res, next) => {
       message,
     });
   } catch (err) {
-    console.log(err);
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save();
@@ -118,4 +118,35 @@ exports.resetPassword = asyncCatchWrapper(async (req, res, next) => {
   user.passwordResetExpires = undefined;
   await user.save();
   createSendToken(user, 200, res);
+});
+
+exports.protect = asyncCatchWrapper(async (req, res, next) => {
+  // Get token and check if it's there
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+  if (!token) {
+    const { message, statusCode } = appMessages.authentication.jwt.noToken;
+    return next(new AppError(message, statusCode));
+  }
+  // verification
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  //
+  // check if user still exists
+  const freshUser = await Users.findById(decoded.id);
+  if (!freshUser)
+    return next(new AppError('The user does no longer exist.', 401));
+  //
+  // check if user changed password after the JWT was issued
+  if (freshUser.changedPasswordAfter(decoded.iat)) {
+    return next(new AppError('User recently changed password', 401));
+  }
+
+  // grant access to protected route
+  req.user = freshUser;
+  next();
 });
