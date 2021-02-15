@@ -3,6 +3,24 @@ const Itineraries = require('./../models/itinerarySchema');
 const app = require('./../app');
 const request = require('supertest');
 
+exports.postWithAuthentication = async function (url, token, data) {
+  return await request(app)
+    .post(url)
+    .set('Authorization', 'Bearer ' + token)
+    .send(data);
+};
+
+exports.getWithAuthentication = async function (url, token) {
+  return await request(app)
+    .get(url)
+    .set('Authorization', 'Bearer ' + token);
+};
+exports.deleteWithAuthentication = async function (url, token) {
+  return await request(app)
+    .delete(url)
+    .set('Authorization', 'Bearer ' + token);
+};
+
 exports.addTestUser = async function (
   email = 'bob@gmail.com',
   password = '123'
