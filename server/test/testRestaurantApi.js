@@ -1,3 +1,4 @@
+const assert = require('assert');
 const Restaurants = require('./../models/restaurantSchema');
 const Users = require('./../models/userSchema');
 const app = require('./../app');
@@ -20,7 +21,9 @@ const {
   addTestRestaurant,
   getWithAuthentication,
   deleteWithAuthentication,
+  patchWithAuthentication,
 } = require('./_helperFunctions');
+const { patch } = require('./../app');
 const restaurantApi = '/api/v1/restaurant';
 const testRestaurantPoint = {
   type: 'Point',
@@ -74,6 +77,37 @@ describe('# Restaurants Api', function () {
         token
       );
       expect(response.status).to.equal(204);
+    });
+    it('PATCH should return 200 and updated item when changing a restaurant entry', async function () {
+      const restaurant = await getRestaurant("Dani's house of pizza");
+      const updatedRestaurant = { name: 'the name was updated' };
+      const response = await patchWithAuthentication(
+        `${restaurantApi}/${restaurant._id}`,
+        token,
+        updatedRestaurant
+      );
+      const { name, website, address } = response.body.data;
+      expect(response.status).to.equal(200);
+      expect(name).to.equal(updatedRestaurant.name);
+      expect(website).to.equal(restaurant.website);
+      expect(address).to.equal(restaurant.address);
+    });
+    it('PATCH should not update advocate even when the property is in req.body', async function () {
+      const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
+      const restaurant = await getRestaurant("Dani's house of pizza");
+      const originalUserId = restaurant.advocate;
+      const updatedRestaurant = { name: 'the name was updated', advocate: id };
+      const response = await patchWithAuthentication(
+        `${restaurantApi}/${restaurant._id}`,
+        token,
+        updatedRestaurant
+      );
+      const { name, website, address, advocate } = response.body.data;
+      assert.strictEqual(originalUserId.equals(advocate), true);
+      expect(response.status).to.equal(200);
+      expect(name).to.equal(updatedRestaurant.name);
+      expect(website).to.equal(restaurant.website);
+      expect(address).to.equal(restaurant.address);
     });
   });
 });
