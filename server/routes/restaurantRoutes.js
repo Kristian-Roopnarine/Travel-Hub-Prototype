@@ -14,6 +14,7 @@ router
 router
   .route('/:id')
   .get(authController.protect, restaurantController.getRestaurant)
+  .patch(authController.protect, restaurantController.updateRestaurant)
   .delete(authController.protect, restaurantController.deleleteRestaurant);
 
 module.exports = router;
