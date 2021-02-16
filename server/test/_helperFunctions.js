@@ -21,6 +21,12 @@ exports.deleteWithAuthentication = async function (url, token) {
     .delete(url)
     .set('Authorization', 'Bearer ' + token);
 };
+exports.patchWithAuthentication = async function (url, token, data) {
+  return await request(app)
+    .patch(url)
+    .send(data)
+    .set('Authorization', 'Bearer ' + token);
+};
 
 exports.addTestUser = async function (
   email = 'bob@gmail.com',
