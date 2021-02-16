@@ -2,6 +2,7 @@ const Users = require('./../models/userSchema');
 const Itineraries = require('./../models/itinerarySchema');
 const app = require('./../app');
 const request = require('supertest');
+const Restaurants = require('../models/restaurantSchema');
 
 exports.postWithAuthentication = async function (url, token, data) {
   return await request(app)
@@ -42,6 +43,21 @@ exports.addTestItinerary = async function (email) {
   });
 };
 
+exports.addTestRestaurant = async function (email) {
+  const user = await Users.findOne({ email }).exec();
+  const testPoint = {
+    type: 'Point',
+    coordinates: [-73.83063, 40.70918],
+  };
+  return await Restaurants.create({
+    name: "Dani's house of pizza",
+    advocate: user._id,
+    location: testPoint,
+    website: 'https://danishouseofpizza.com',
+    address: '81-28 Lefferts Blvd, Kew Gardens, NY 11415',
+  });
+};
+
 exports.getJWT = async function (email = 'bob@gmail.com', password = '123') {
   return await request(app)
     .post('/api/v1/auth/login')
@@ -54,4 +70,8 @@ exports.getItinerary = async function () {
 
 exports.getUserByEmail = async function (email) {
   return await Users.findOne({ email }).exec();
+};
+
+exports.getRestaurant = async function (name) {
+  return await Restaurants.findOne({ name }).exec();
 };
