@@ -14,6 +14,10 @@ const dev = {
     */
     url: process.env.DEV_DB_STRING.replace('<password>', process.env.DB_PASS),
   },
+  google: {
+    client: process.env.GOOGLE_CLIENT_ID,
+    secret: process.env.GOOGLE_SECRET,
+  },
 };
 
 const test = {
@@ -27,6 +31,10 @@ const test = {
     name: process.env.TEST_DB_NAME || 'test',
     */
     url: process.env.TEST_DB_STRING,
+  },
+  google: {
+    client: process.env.GOOGLE_CLIENT_ID,
+    secret: process.env.GOOGLE_SECRET,
   },
 };
 
