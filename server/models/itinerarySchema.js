@@ -16,6 +16,12 @@ const itinerarySchema = mongoose.Schema({
       ref: 'Users',
     },
   ],
+  restaraunts: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Restaurants',
+    },
+  ],
 });
 
 const Itineraries = mongoose.model('Itineraries', itinerarySchema);

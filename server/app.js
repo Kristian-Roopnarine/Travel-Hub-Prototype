@@ -6,6 +6,7 @@ const morgan = require('morgan');
 
 const authRouter = require('./routes/authRoutes');
 const itineraryRouter = require('./routes/itineraryRoutes');
+const restaurantRouter = require('./routes/restaurantRoutes');
 const { protect } = require('./controllers/authController');
 
 app.use(express.json());
@@ -27,6 +28,7 @@ app.get('/test-jwt', protect, (req, res, next) => {
 });
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/itinerary', itineraryRouter);
+app.use('/api/v1/restaurant', restaurantRouter);
 
 app.all('*', (req, res, next) => {
   next(

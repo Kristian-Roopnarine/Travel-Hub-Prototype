@@ -10,6 +10,18 @@ exports.createOne = (Model) =>
       data: doc,
     });
   });
+exports.getOne = (Model) =>
+  asyncCatchWrapper(async (req, res, next) => {
+    const { id } = req.params;
+    const doc = await Model.findById(id).exec();
+    if (!doc) {
+      return next(new AppError('That document does not exist.', 404));
+    }
+    res.status(200).json({
+      status: 'success',
+      data: doc,
+    });
+  });
 
 exports.deleteOne = (Model) =>
   asyncCatchWrapper(async (req, res, next) => {
