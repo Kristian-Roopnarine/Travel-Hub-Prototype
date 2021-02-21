@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 
 const itinerarySchema = mongoose.Schema({
   title: {
@@ -16,13 +17,10 @@ const itinerarySchema = mongoose.Schema({
       ref: 'Users',
     },
   ],
-  restaraunts: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Restaurants',
-    },
-  ],
+  joinUrl: String,
 });
+
+// think of logic for joinurl
 
 const Itineraries = mongoose.model('Itineraries', itinerarySchema);
 
