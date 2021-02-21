@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import GoogleMapReact from 'google-map-react';
 import SearchBox from './SearchBox';
+import axios from 'axios';
 const { REACT_APP_MAPS_KEY } = process.env;
 
 const AnyReactComponent = ({ text }) => <div>{text}</div>;
@@ -14,6 +15,16 @@ function GoogleMaps() {
   const [apiReady, setApiReady] = useState(false);
   const [places, setPlaces] = useState([]);
   const [center, setCenter] = useState(defaultCenter);
+  const checkAuthentication = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/test-jwt', {
+        withCredentials: true,
+      });
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   function handleApiLoaded(map, maps) {
     setApiReady(true);
     setMap(map);
@@ -43,6 +54,7 @@ function GoogleMaps() {
           );
         })}
       </GoogleMapReact>
+      <button onClick={checkAuthentication}> Check Authenticated</button>
     </div>
   );
 }
