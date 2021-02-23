@@ -27,6 +27,23 @@ const itineraryApi = '/api/v1/itinerary';
 const testTitle = 'This is a test title';
 const title = 'This is a title';
 
+beforeEach((done) => {
+  mongoose.connect(config.db.url, { useNewUrlParser: true }, () => done());
+});
+afterEach((done) => {
+  mongoose.connection.db.dropDatabase(() => {
+    mongoose.connection.close(() => done());
+  });
+});
+beforeEach((done) => {
+  mongoose.connect(config.db.url, { useNewUrlParser: true }, () => done());
+});
+afterEach((done) => {
+  mongoose.connection.db.dropDatabase(() => {
+    mongoose.connection.close(() => done());
+  });
+});
+
 ///////////////////////////////////
 // ITINERARY API TESTS
 ///////////////////////////////////
@@ -38,8 +55,7 @@ describe('#ItineraryAPI', function () {
     await addTestUser();
     await addTestUser('bob2@gmail.com', '123');
     await addTestItinerary('bob@gmail.com');
-    const response = await getJWT();
-    token = response.body.token;
+    token = await getJWT();
   });
   /*
   it('GET / should return all itineraries a user is part of', async function(){
@@ -173,8 +189,7 @@ describe('#ItineraryAPI', function () {
   });
 
   it('POST /:id/members should return 401 when unauthorized user tries to add members to itinerary', async function () {
-    const response = await getJWT('bob2@gmail.com', '123');
-    token = response.body.token;
+    token = await getJWT('bob2@gmail.com');
     // find the itinerary id to send to the backend
     const itinerary = await getItinerary();
     var url = `${itineraryApi}/${itinerary._id}/members`;

@@ -42,8 +42,7 @@ describe('# Restaurants Api', function () {
     await Users.deleteMany({});
     await addTestUser();
     await addTestRestaurant('bob@gmail.com');
-    const response = await getJWT();
-    token = response.body.token;
+    token = await getJWT();
   });
   describe('/ ROUTE', function () {
     it('POST should return 201 on succesfull restaurant creation', async function () {

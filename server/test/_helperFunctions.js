@@ -3,29 +3,20 @@ const Itineraries = require('./../models/itinerarySchema');
 const app = require('./../app');
 const request = require('supertest');
 const Restaurants = require('../models/restaurantSchema');
+const jwt = require('jsonwebtoken');
 
 exports.postWithAuthentication = async function (url, token, data) {
-  return await request(app)
-    .post(url)
-    .set('Authorization', 'Bearer ' + token)
-    .send(data);
+  return await request(app).post(url).set('Cookie', `jwt=${token}`).send(data);
 };
 
 exports.getWithAuthentication = async function (url, token) {
-  return await request(app)
-    .get(url)
-    .set('Authorization', 'Bearer ' + token);
+  return await request(app).get(url).set('Cookie', `jwt=${token}`);
 };
 exports.deleteWithAuthentication = async function (url, token) {
-  return await request(app)
-    .delete(url)
-    .set('Authorization', 'Bearer ' + token);
+  return await request(app).delete(url).set('Cookie', `jwt=${token}`);
 };
 exports.patchWithAuthentication = async function (url, token, data) {
-  return await request(app)
-    .patch(url)
-    .send(data)
-    .set('Authorization', 'Bearer ' + token);
+  return await request(app).patch(url).set('Cookie', `jwt=${token}`).send(data);
 };
 
 exports.addTestUser = async function (
@@ -65,9 +56,12 @@ exports.addTestRestaurant = async function (email) {
 };
 
 exports.getJWT = async function (email = 'bob@gmail.com', password = '123') {
-  return await request(app)
-    .post('/api/v1/auth/login')
-    .send({ email, password });
+  function signToken(id) {
+    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+  }
+  const user = await Users.findOne({ email }).exec();
+  const token = signToken(user._id);
+  return token;
 };
 
 exports.getItinerary = async function () {
