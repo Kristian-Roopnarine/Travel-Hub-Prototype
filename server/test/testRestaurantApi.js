@@ -24,6 +24,7 @@ const {
   patchWithAuthentication,
 } = require('./_helperFunctions');
 const { patch } = require('./../app');
+const baseUrl = '/api/v1';
 const restaurantApi = '/api/v1/restaurant';
 const testRestaurantPoint = {
   type: 'Point',
@@ -45,6 +46,25 @@ describe('# Restaurants Api', function () {
     token = await getJWT();
   });
   describe('/ ROUTE', function () {
+    it('GET should return all restaraunts without itinerary id in param', async function () {
+      const response = await getWithAuthentication(`${restaurantApi}/`, token);
+      const { results } = response.body;
+      expect(results).to.equal(1);
+    });
+    it('GET should return all restaurants for a itinerary when respective id is provided', async function () {
+      await addTestItinerary('bob@gmail.com');
+      await addTestRestaurant('bob@gmail.com', 'This is a test title');
+      await addTestRestaurant('bob@gmail.com', 'This is a test title');
+      const itinerary = await getItinerary();
+      const response = await getWithAuthentication(
+        `${baseUrl}/itinerary/${itinerary._id}/restaurant/`,
+        token
+      );
+      const { results, data } = response.body;
+      expect(results).to.equal(2);
+      // check that the restaurant is associated with the correct itinerary
+      expect(itinerary._id.equals(data[0].itinerary)).to.equal(true);
+    });
     it('POST should return 201 on succesfull restaurant creation', async function () {
       const response = await postWithAuthentication(
         `${restaurantApi}/`,
