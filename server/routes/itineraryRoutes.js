@@ -1,9 +1,12 @@
 const express = require('express');
+const restaurantRouter = require('./restaurantRoutes');
 const router = express.Router();
 const itineraryController = require('./../controllers/itineraryController');
 const authController = require('./../controllers/authController');
 const itineraryMiddleware = require('./../middleware/itinerary');
 const userMiddleware = require('./../middleware/user');
+
+router.use('/:itinId/restaurant', restaurantRouter);
 router
   .route('/')
   .post(
@@ -20,6 +23,7 @@ router
     itineraryMiddleware.isOwner,
     itineraryController.deleteItinerary
   );
+// fix this nested route eventually
 router
   .route('/:id/members')
   .get(authController.protect, itineraryController.getAllMembers)
