@@ -16,6 +16,9 @@ const signToken = (id) => {
 };
 
 const createSendToken = (user, statusCode, res) => {
+  // change this to redirect to where the url was
+  // not always the map
+  // or maybe have a home page
   const token = signToken(user._id);
   const cookieOptions = {
     expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
@@ -28,23 +31,12 @@ const createSendToken = (user, statusCode, res) => {
     .cookie('jwt', token, cookieOptions)
     .redirect(`${config.app.url}/map`);
 };
-// solely used for unit testing, does not redirect on login
-const creatTestToken = (user, statusCode, res) => {
-  const token = signToken(user._id);
-  const cookieOptions = {
-    expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-    httpOnly: true,
-  };
-
-  res.status(statusCode).cookie('jwt', token, cookieOptions);
-};
 
 exports.login = asyncCatchWrapper(async (req, res, next) => {
   const { user } = req;
   if (!user) {
     return next(new AppError('Error during login', 500));
   }
-  if (process.env.NODE_ENV === 'test') return createTestToken(user, 200, res);
   createSendToken(user, 200, res);
 });
 
