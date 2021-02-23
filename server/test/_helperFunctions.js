@@ -40,19 +40,26 @@ exports.addTestItinerary = async function (email) {
   });
 };
 
-exports.addTestRestaurant = async function (email) {
+exports.addTestRestaurant = async function (email, itinerary_title = null) {
   const user = await Users.findOne({ email }).exec();
   const testPoint = {
     type: 'Point',
     coordinates: [-73.83063, 40.70918],
   };
-  return await Restaurants.create({
+  let data = {
     name: "Dani's house of pizza",
     advocate: user._id,
     location: testPoint,
     website: 'https://danishouseofpizza.com',
     address: '81-28 Lefferts Blvd, Kew Gardens, NY 11415',
-  });
+  };
+  if (itinerary_title) {
+    const it = await Itineraries.findOne({
+      title: itinerary_title,
+    }).exec();
+    data = { ...data, itinerary: it._id };
+  }
+  return await Restaurants.create(data);
 };
 
 exports.getJWT = async function (email = 'bob@gmail.com', password = '123') {
