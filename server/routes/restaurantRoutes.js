@@ -1,13 +1,15 @@
 const express = require('express');
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const authController = require('./../controllers/authController');
 const restaurantController = require('./../controllers/restaurantController');
 const restaurantMiddleware = require('./../middleware/restaurant');
 router
   .route('/')
+  .get(authController.protect, restaurantController.getAllRestaraunts)
   .post(
     authController.protect,
     restaurantMiddleware.setUseridAsAdvocate,
+    restaurantMiddleware.setItineraryParams,
     restaurantController.createRestaurant
   );
 
