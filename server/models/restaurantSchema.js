@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 const pointSchema = require('./pointSchema');
 require('mongoose-type-url');
 const restaurantSchema = mongoose.Schema({
+  itinerary: {
+    type: mongoose.Schema.Types.ObjectId,
+  },
   name: {
     type: String,
     required: [true, 'Your restaraunt needs a name'],
