@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const authRouter = require('./routes/authRoutes');
 const itineraryRouter = require('./routes/itineraryRoutes');
 const restaurantRouter = require('./routes/restaurantRoutes');
+const lodgeRouter = require('./routes/lodgeRoutes');
 const { protect } = require('./controllers/authController');
 const passport = require('passport');
 require('./passport-google');
@@ -36,6 +37,7 @@ app.get('/test-jwt', protect, (req, res, next) => {
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/itinerary', itineraryRouter);
 app.use('/api/v1/restaurant', restaurantRouter);
+app.use('/api/v1/lodge', lodgeRouter);
 
 app.all('*', (req, res, next) => {
   next(
