@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 const authController = require('./../controllers/authController');
 const restaurantController = require('./../controllers/restaurantController');
-const restaurantMiddleware = require('./../middleware/restaurant');
+const generalMiddleware = require('./../middleware/general');
 router
   .route('/')
   .get(authController.protect, restaurantController.getAllRestaraunts)
   .post(
     authController.protect,
-    restaurantMiddleware.setUseridAsAdvocate,
-    restaurantMiddleware.setItineraryParams,
+    generalMiddleware.setUseridAsAdvocate,
+    generalMiddleware.setItineraryParams,
     restaurantController.createRestaurant
   );
 
