@@ -3,6 +3,7 @@ const Itineraries = require('./../models/itinerarySchema');
 const app = require('./../app');
 const request = require('supertest');
 const Restaurants = require('../models/restaurantSchema');
+const Lodges = require('../models/lodgeSchema');
 const jwt = require('jsonwebtoken');
 
 exports.postWithAuthentication = async function (url, token, data) {
@@ -61,6 +62,27 @@ exports.addTestRestaurant = async function (email, itinerary_title = null) {
   }
   return await Restaurants.create(data);
 };
+exports.addTestLodge = async function (email, itinerary_title = null) {
+  const user = await Users.findOne({ email }).exec();
+  const testPoint = {
+    type: 'Point',
+    coordinates: [-73.83063, 40.70918],
+  };
+  let data = {
+    name: 'Beautiful Home',
+    advocate: user._id,
+    location: testPoint,
+    website: 'https://testinghome.com',
+    address: '81-28 Lefferts Blvd, Kew Gardens, NY 11415',
+  };
+  if (itinerary_title) {
+    const it = await Itineraries.findOne({
+      title: itinerary_title,
+    }).exec();
+    data = { ...data, itinerary: it._id };
+  }
+  return await Lodges.create(data);
+};
 
 exports.getJWT = async function (email = 'bob@gmail.com', password = '123') {
   function signToken(id) {
@@ -81,4 +103,8 @@ exports.getUserByEmail = async function (email) {
 
 exports.getRestaurant = async function (name) {
   return await Restaurants.findOne({ name }).exec();
+};
+
+exports.getLodge = async function (name) {
+  return await Lodges.findOne({ name }).exec();
 };
