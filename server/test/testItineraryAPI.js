@@ -113,6 +113,19 @@ describe('#ItineraryAPI', function () {
     expect(response.status).to.equal(statusCode);
     expect(body.message).to.equal(message);
   });
+  it('GET /:id/join should add member to itinerary with :id', async function () {
+    await addTestUser('bob2@gmail.com', '1234');
+    token = await getJWT('bob2@gmail.com', '1234');
+    const itinerary = await getItinerary();
+    const response = await getWithAuthentication(
+      `${itineraryApi}/${itinerary._id}/join`,
+      token
+    );
+    const { message, data } = response.body;
+    expect(response.status).to.equal(200);
+    expect(data.members.length).to.equal(1);
+    expect(message).to.equal('You have been added to this trip');
+  });
 
   it('GET /:id/members returns all members for a specific itinerary', async function () {
     const itinerary = await getItinerary();
