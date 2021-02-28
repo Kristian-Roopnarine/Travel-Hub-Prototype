@@ -27,7 +27,6 @@ exports.getAllMembers = asyncCatchWrapper(async (req, res, next) => {
     const { message, statusCode } = itineraryMessages.doesNotExist;
     return next(new AppError(message, statusCode));
   }
-  console.log(itinerary.members);
   res.status(200).json({
     data: itinerary.members,
   });

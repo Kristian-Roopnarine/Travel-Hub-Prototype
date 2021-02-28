@@ -126,6 +126,29 @@ describe('#ItineraryAPI', function () {
     expect(data.members.length).to.equal(1);
     expect(message).to.equal('You have been added to this trip');
   });
+  it('GET /:id/join should return 400 if member is already part of trip', async function () {
+    await addTestUser('bob2@gmail.com', '1234');
+    token = await getJWT('bob2@gmail.com', '1234');
+    const itinerary = await getItinerary();
+    await getWithAuthentication(`${itineraryApi}/${itinerary._id}/join`, token);
+    const response = await getWithAuthentication(
+      `${itineraryApi}/${itinerary._id}/join`,
+      token
+    );
+    const { message, data } = response.body;
+    expect(response.status).to.equal(400);
+    expect(message).to.equal('You are already part of this trip');
+  });
+  it('GET /:id/join should return 400 if creator makes this requesr', async function () {
+    const itinerary = await getItinerary();
+    const response = await getWithAuthentication(
+      `${itineraryApi}/${itinerary._id}/join`,
+      token
+    );
+    const { message, data } = response.body;
+    expect(response.status).to.equal(400);
+    expect(message).to.equal('You are already part of this trip');
+  });
 
   it('GET /:id/members returns all members for a specific itinerary', async function () {
     const itinerary = await getItinerary();
