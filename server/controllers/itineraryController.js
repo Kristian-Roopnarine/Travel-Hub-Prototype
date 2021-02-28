@@ -27,7 +27,6 @@ exports.getAllMembers = asyncCatchWrapper(async (req, res, next) => {
     const { message, statusCode } = itineraryMessages.doesNotExist;
     return next(new AppError(message, statusCode));
   }
-  console.log(itinerary.members);
   res.status(200).json({
     data: itinerary.members,
   });
@@ -50,6 +49,20 @@ exports.addMember = asyncCatchWrapper(async (req, res, next) => {
     status: 'success',
     message,
     data: itinerary,
+  });
+});
+exports.addFromUrl = asyncCatchWrapper(async (req, res, next) => {
+  const { id } = req.params;
+  const { user } = req;
+  const itinerary = await Itineraries.findByIdAndUpdate(
+    id,
+    { $push: { members: user._id } },
+    { upsert: true, new: true, save: true }
+  );
+  res.status(200).json({
+    status: 'success',
+    data: itinerary,
+    message: 'You have been added to this trip',
   });
 });
 

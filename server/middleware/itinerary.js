@@ -25,3 +25,15 @@ exports.setUseridAsCreator = asyncCatchWrapper(async (req, res, next) => {
   req.body.creator = user._id;
   next();
 });
+
+exports.checkIfCurrentMember = asyncCatchWrapper(async (req, res, next) => {
+  const { id } = req.params;
+  const { user } = req;
+  const itinerary = await Itineraries.findById(id).exec();
+  const isCreator = itinerary.creator.equals(user._id);
+  const isMember = itinerary.members.includes(user._id);
+  if (isCreator || isMember) {
+    return next(new AppError('You are already part of this trip', 400));
+  }
+  next();
+});
