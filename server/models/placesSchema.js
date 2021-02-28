@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const pointSchema = require('./pointSchema');
 require('mongoose-type-url');
-const restaurantSchema = mongoose.Schema({
+
+const placesSchema = mongoose.Schema({
   itinerary: {
     type: mongoose.Schema.Types.ObjectId,
   },
@@ -20,8 +21,11 @@ const restaurantSchema = mongoose.Schema({
   googleMapUrl: mongoose.SchemaTypes.Url,
   website: mongoose.SchemaTypes.Url,
   address: String,
-  // reviews?
+  category: {
+    type: String,
+    enum: ['restaurant', 'tourist_attraction'],
+  },
 });
 
-const Restaurants = mongoose.model('Restaurants', restaurantSchema);
-module.exports = Restaurants;
+const Places = mongoose.model('Places', placesSchema);
+module.exports = Places;

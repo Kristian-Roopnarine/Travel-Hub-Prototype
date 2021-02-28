@@ -1,5 +1,5 @@
 const assert = require('assert');
-const Restaurants = require('./../models/restaurantSchema');
+const Places = require('./../models/placesSchema');
 const Users = require('./../models/userSchema');
 const app = require('./../app');
 const chai = require('chai');
@@ -11,77 +11,97 @@ const helpFunc = require('./_helperFunctions');
 const mongoose = require('mongoose');
 
 const {
-  getRestaurant,
+  getPlaces,
   getJWT,
   addTestUser,
   getUserByEmail,
   getItinerary,
   addTestItinerary,
   postWithAuthentication,
-  addTestRestaurant,
+  addTestPlace,
   getWithAuthentication,
   deleteWithAuthentication,
   patchWithAuthentication,
 } = require('./_helperFunctions');
-const { patch } = require('./../app');
 const baseUrl = '/api/v1';
-const restaurantApi = '/api/v1/restaurant';
-const testRestaurantPoint = {
+const placeApi = '/api/v1/place';
+const testPlacePoint = {
   type: 'Point',
   coordinates: [-73.83504, 40.70752],
 };
-const testRestaurant = {
+const testPlace = {
   name: "Spolini's",
-  location: testRestaurantPoint,
+  location: testPlacePoint,
   address: '116-25 Metropolitan Ave, Queens, NY 11418',
   website: 'https://spolinismenu.com',
+  category: 'restaurant',
 };
 
 var token = null;
-describe('# Restaurants Api', function () {
+describe('# Places Api', function () {
   beforeEach(async function () {
     await Users.deleteMany({});
     await addTestUser();
-    await addTestRestaurant('bob@gmail.com');
+    await addTestPlace('bob@gmail.com');
     token = await getJWT();
   });
   describe('/ ROUTE', function () {
     it('GET should return all restaraunts without itinerary id in param', async function () {
-      const response = await getWithAuthentication(`${restaurantApi}/`, token);
+      const response = await getWithAuthentication(`${placeApi}/`, token);
       const { results } = response.body;
       expect(results).to.equal(1);
     });
-    it('GET should return all restaurants for a itinerary when respective id is provided', async function () {
+    it('GET should return all places for a itinerary when respective id is provided', async function () {
       await addTestItinerary('bob@gmail.com');
-      await addTestRestaurant('bob@gmail.com', 'This is a test title');
-      await addTestRestaurant('bob@gmail.com', 'This is a test title');
+      await addTestPlace('bob@gmail.com', 'restaurant', 'This is a test title');
+      await addTestPlace(
+        'bob@gmail.com',
+        'tourist_attraction',
+        'This is a test title'
+      );
       const itinerary = await getItinerary();
       const response = await getWithAuthentication(
-        `${baseUrl}/itinerary/${itinerary._id}/restaurant/`,
+        `${baseUrl}/itinerary/${itinerary._id}/place/`,
         token
       );
       const { results, data } = response.body;
       expect(results).to.equal(2);
-      // check that the restaurant is associated with the correct itinerary
+      // check that the place is associated with the correct itinerary
       expect(itinerary._id.equals(data[0].itinerary)).to.equal(true);
     });
     it('POST should return 201 on succesfull restaurant creation', async function () {
       const response = await postWithAuthentication(
-        `${restaurantApi}/`,
+        `${placeApi}/`,
         token,
-        testRestaurant
+        testPlace
       );
-      const { name, location, website, address } = response.body.data;
-      expect(name).to.equal(testRestaurant.name);
+      const { name, location, website, address, category } = response.body.data;
+      expect(name).to.equal(testPlace.name);
       expect(response.status).to.equal(201);
-      expect(website).to.equal(testRestaurant.website);
+      expect(website).to.equal(testPlace.website);
+      expect(category).to.equal('restaurant');
+    });
+
+    it('POST should return 201 on succesfull tourist attraction creation', async function () {
+      let testAttraction = testPlace;
+      testAttraction.category = 'tourist_attraction';
+      const response = await postWithAuthentication(
+        `${placeApi}/`,
+        token,
+        testAttraction
+      );
+      const { name, location, website, address, category } = response.body.data;
+      expect(name).to.equal(testAttraction.name);
+      expect(response.status).to.equal(201);
+      expect(website).to.equal(testAttraction.website);
+      expect(category).to.equal('tourist_attraction');
     });
   });
   describe('/:id ROUTE', function () {
-    it('GET should return 200 on successfull restaurant query', async function () {
-      const restaurant = await getRestaurant("Dani's house of pizza");
+    it('GET should return 200 on successfull place query', async function () {
+      const place = await getPlaces("Dani's house of pizza");
       const response = await getWithAuthentication(
-        `${restaurantApi}/${restaurant._id}`,
+        `${placeApi}/${place._id}`,
         token
       );
       const { name, location, website } = response.body.data;
@@ -89,44 +109,44 @@ describe('# Restaurants Api', function () {
       expect(name).to.equal("Dani's house of pizza");
       expect(website).to.equal('https://danishouseofpizza.com');
     });
-    it('DELETE should return 204 when deleting a restaurant entry', async function () {
-      const restaurant = await getRestaurant("Dani's house of pizza");
+    it('DELETE should return 204 when deleting a place entry', async function () {
+      const place = await getPlaces("Dani's house of pizza");
       const response = await deleteWithAuthentication(
-        `${restaurantApi}/${restaurant._id}`,
+        `${placeApi}/${place._id}`,
         token
       );
       expect(response.status).to.equal(204);
     });
-    it('PATCH should return 200 and updated item when changing a restaurant entry', async function () {
-      const restaurant = await getRestaurant("Dani's house of pizza");
-      const updatedRestaurant = { name: 'the name was updated' };
+    it('PATCH should return 200 and updated item when changing a place entry', async function () {
+      const place = await getPlaces("Dani's house of pizza");
+      const updatedPlace = { name: 'the name was updated' };
       const response = await patchWithAuthentication(
-        `${restaurantApi}/${restaurant._id}`,
+        `${placeApi}/${place._id}`,
         token,
-        updatedRestaurant
+        updatedPlace
       );
       const { name, website, address } = response.body.data;
       expect(response.status).to.equal(200);
-      expect(name).to.equal(updatedRestaurant.name);
-      expect(website).to.equal(restaurant.website);
-      expect(address).to.equal(restaurant.address);
+      expect(name).to.equal(updatedPlace.name);
+      expect(website).to.equal(place.website);
+      expect(address).to.equal(place.address);
     });
     it('PATCH should not update advocate even when the property is in req.body', async function () {
       const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
-      const restaurant = await getRestaurant("Dani's house of pizza");
-      const originalUserId = restaurant.advocate;
-      const updatedRestaurant = { name: 'the name was updated', advocate: id };
+      const place = await getPlaces("Dani's house of pizza");
+      const originalUserId = place.advocate;
+      const updatedPlace = { name: 'the name was updated', advocate: id };
       const response = await patchWithAuthentication(
-        `${restaurantApi}/${restaurant._id}`,
+        `${placeApi}/${place._id}`,
         token,
-        updatedRestaurant
+        updatedPlace
       );
       const { name, website, address, advocate } = response.body.data;
       assert.strictEqual(originalUserId.equals(advocate), true);
       expect(response.status).to.equal(200);
-      expect(name).to.equal(updatedRestaurant.name);
-      expect(website).to.equal(restaurant.website);
-      expect(address).to.equal(restaurant.address);
+      expect(name).to.equal(updatedPlace.name);
+      expect(website).to.equal(place.website);
+      expect(address).to.equal(place.address);
     });
   });
 });

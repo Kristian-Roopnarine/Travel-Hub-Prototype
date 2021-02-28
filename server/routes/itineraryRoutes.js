@@ -1,5 +1,5 @@
 const express = require('express');
-const restaurantRouter = require('./restaurantRoutes');
+const placesRouter = require('./placesRoutes');
 const lodgeRouter = require('./lodgeRoutes');
 const router = express.Router();
 const itineraryController = require('./../controllers/itineraryController');
@@ -7,7 +7,7 @@ const authController = require('./../controllers/authController');
 const itineraryMiddleware = require('./../middleware/itinerary');
 const userMiddleware = require('./../middleware/user');
 
-router.use('/:itinId/restaurant', restaurantRouter);
+router.use('/:itinId/place', placesRouter);
 router.use('/:itinId/lodge', lodgeRouter);
 router
   .route('/')

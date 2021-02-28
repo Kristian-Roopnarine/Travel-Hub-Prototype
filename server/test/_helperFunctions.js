@@ -2,7 +2,7 @@ const Users = require('./../models/userSchema');
 const Itineraries = require('./../models/itinerarySchema');
 const app = require('./../app');
 const request = require('supertest');
-const Restaurants = require('../models/restaurantSchema');
+const Places = require('../models/placesSchema');
 const Lodges = require('../models/lodgeSchema');
 const jwt = require('jsonwebtoken');
 
@@ -41,7 +41,11 @@ exports.addTestItinerary = async function (email) {
   });
 };
 
-exports.addTestRestaurant = async function (email, itinerary_title = null) {
+exports.addTestPlace = async function (
+  email,
+  category = 'restaurant',
+  itinerary_title = null
+) {
   const user = await Users.findOne({ email }).exec();
   const testPoint = {
     type: 'Point',
@@ -53,6 +57,7 @@ exports.addTestRestaurant = async function (email, itinerary_title = null) {
     location: testPoint,
     website: 'https://danishouseofpizza.com',
     address: '81-28 Lefferts Blvd, Kew Gardens, NY 11415',
+    category,
   };
   if (itinerary_title) {
     const it = await Itineraries.findOne({
@@ -60,7 +65,7 @@ exports.addTestRestaurant = async function (email, itinerary_title = null) {
     }).exec();
     data = { ...data, itinerary: it._id };
   }
-  return await Restaurants.create(data);
+  return await Places.create(data);
 };
 exports.addTestLodge = async function (email, itinerary_title = null) {
   const user = await Users.findOne({ email }).exec();
@@ -101,8 +106,8 @@ exports.getUserByEmail = async function (email) {
   return await Users.findOne({ email }).exec();
 };
 
-exports.getRestaurant = async function (name) {
-  return await Restaurants.findOne({ name }).exec();
+exports.getPlaces = async function (name) {
+  return await Places.findOne({ name }).exec();
 };
 
 exports.getLodge = async function (name) {
