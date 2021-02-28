@@ -25,6 +25,10 @@ router
     itineraryMiddleware.isOwner,
     itineraryController.deleteItinerary
   );
+router
+  .route('/:id/join')
+  .get(authController.protect, itineraryController.addFromUrl);
+
 // fix this nested route eventually
 router
   .route('/:id/members')
