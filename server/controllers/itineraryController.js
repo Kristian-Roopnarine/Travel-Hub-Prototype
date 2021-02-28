@@ -52,6 +52,20 @@ exports.addMember = asyncCatchWrapper(async (req, res, next) => {
     data: itinerary,
   });
 });
+exports.addFromUrl = asyncCatchWrapper(async (req, res, next) => {
+  const { id } = req.params;
+  const { user } = req;
+  const itinerary = await Itineraries.findByIdAndUpdate(
+    id,
+    { $push: { members: user._id } },
+    { upsert: true, new: true, save: true }
+  );
+  res.status(200).json({
+    status: 'success',
+    data: itinerary,
+    message: 'You have been added to this trip',
+  });
+});
 
 exports.deleteMember = asyncCatchWrapper(async (req, res, next) => {
   // check if user is the owner
