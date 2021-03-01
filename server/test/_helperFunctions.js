@@ -35,9 +35,15 @@ exports.addTestUser = async function (
 
 exports.addTestItinerary = async function (email) {
   const user = await Users.findOne({ email: email }).exec();
+  const testPoint = {
+    type: 'Point',
+    coordinates: [-74.006, 40.7128],
+  };
   return await Itineraries.create({
     title: 'This is a test title',
     creator: user._id,
+    city: 'New York',
+    location: testPoint,
   });
 };
 

@@ -26,6 +26,10 @@ const mongoose = require('mongoose');
 const itineraryApi = '/api/v1/itinerary';
 const testTitle = 'This is a test title';
 const title = 'This is a title';
+const testPoint = {
+  type: 'Point',
+  coordinates: [-74.006, 40.7128],
+};
 
 beforeEach((done) => {
   mongoose.connect(config.db.url, { useNewUrlParser: true }, () => done());
@@ -64,6 +68,8 @@ describe('#ItineraryAPI', function () {
   it('POST / should return 201 on succesful itinerary creation', async function () {
     const response = await postWithAuthentication(`${itineraryApi}`, token, {
       title,
+      city: 'New York',
+      location: testPoint,
     });
     const { data } = response.body;
     expect(data.title).to.equal(title);
@@ -79,6 +85,7 @@ describe('#ItineraryAPI', function () {
     const { data } = response.body;
     expect(response.status).to.equal(200);
     expect(data.title).to.equal(testTitle);
+    expect(data.city).to.equal('New York');
   });
 
   it('GET /:id should return 404 when itinerary does not exist', async function () {

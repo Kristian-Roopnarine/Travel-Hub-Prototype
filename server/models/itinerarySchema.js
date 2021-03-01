@@ -1,10 +1,18 @@
 const mongoose = require('mongoose');
-const crypto = require('crypto');
+const pointSchema = require('./pointSchema');
 
 const itinerarySchema = mongoose.Schema({
   title: {
     type: String,
     required: [true, 'Your itinerary needs a title!'],
+  },
+  city: {
+    type: String,
+    required: true,
+  },
+  location: {
+    type: pointSchema,
+    required: true,
   },
   creator: {
     type: mongoose.Schema.Types.ObjectId,
@@ -17,7 +25,6 @@ const itinerarySchema = mongoose.Schema({
       ref: 'Users',
     },
   ],
-  joinUrl: String,
 });
 
 // think of logic for joinurl
