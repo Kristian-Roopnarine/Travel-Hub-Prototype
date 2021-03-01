@@ -3,11 +3,9 @@ const { promisify } = require('util');
 const AppError = require('./../utils/appError');
 const Users = require('./../models/userSchema');
 const asyncCatchWrapper = require('./../utils/asyncCatchWrapper');
-const crypto = require('crypto');
 const authMessages = require('./../appMessages/authentication.json');
 const permissionMessages = require('./../appMessages/permissions.json');
 const config = require('./../config');
-const sendEmail = require('./../utils/email');
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
