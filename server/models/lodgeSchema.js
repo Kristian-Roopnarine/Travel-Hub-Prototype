@@ -7,6 +7,7 @@ require('mongoose-type-url');
 const lodgeSchema = mongoose.Schema({
   itinerary: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: 'Itineraries',
   },
   name: {
     type: String,
@@ -15,6 +16,7 @@ const lodgeSchema = mongoose.Schema({
   // is this required?
   advocate: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: 'Users',
     required: true,
   },
   location: {
