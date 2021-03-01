@@ -4,6 +4,8 @@ const app = require('./../app');
 const request = require('supertest');
 const Places = require('../models/placesSchema');
 const Lodges = require('../models/lodgeSchema');
+const Cities = require('../models/citySchema');
+const Countries = require('../models/countrySchema');
 const jwt = require('jsonwebtoken');
 
 exports.postWithAuthentication = async function (url, token, data) {
@@ -32,18 +34,20 @@ exports.addTestUser = async function (
     passwordConfirm: password,
   });
 };
+// data has name, coordinates [lng,lat], country
+exports.addTestCity = async function (data) {
+  const country = await Countries.create({ name: 'United States' });
+  let updatedData = { ...data, country: country._id };
+  return await Cities.create(updatedData);
+};
 
 exports.addTestItinerary = async function (email) {
   const user = await Users.findOne({ email: email }).exec();
-  const testPoint = {
-    type: 'Point',
-    coordinates: [-74.006, 40.7128],
-  };
+  const city = await Cities.findOne({ name: 'New York' }).exec();
   return await Itineraries.create({
     title: 'This is a test title',
     creator: user._id,
-    city: 'New York',
-    location: testPoint,
+    city: city._id,
   });
 };
 

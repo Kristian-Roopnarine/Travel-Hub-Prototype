@@ -17,6 +17,7 @@ const {
   getUserByEmail,
   getItinerary,
   addTestItinerary,
+  addTestCity,
   postWithAuthentication,
   addTestPlace,
   getWithAuthentication,
@@ -36,6 +37,10 @@ const testPlace = {
   website: 'https://spolinismenu.com',
   category: 'restaurant',
 };
+const testPoint = {
+  type: 'Point',
+  coordinates: [-74.006, 40.7128],
+};
 
 var token = null;
 describe('# Places Api', function () {
@@ -52,6 +57,7 @@ describe('# Places Api', function () {
       expect(results).to.equal(1);
     });
     it('GET should return all places for a itinerary when respective id is provided', async function () {
+      await addTestCity({ name: 'New York', coordinates: testPoint });
       await addTestItinerary('bob@gmail.com');
       await addTestPlace('bob@gmail.com', 'restaurant', 'This is a test title');
       await addTestPlace(

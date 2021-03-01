@@ -17,6 +17,7 @@ const {
   addTestItinerary,
   postWithAuthentication,
   addTestLodge,
+  addTestCity,
   getLodge,
   getWithAuthentication,
   deleteWithAuthentication,
@@ -27,6 +28,10 @@ const lodgeApi = '/api/v1/lodge';
 const testLodgePoint = {
   type: 'Point',
   coordinates: [-73.83504, 40.70752],
+};
+const testPoint = {
+  type: 'Point',
+  coordinates: [-74.006, 40.7128],
 };
 const testLodge = {
   name: 'Another Beautiful Home',
@@ -50,6 +55,7 @@ describe('# Lodge Api', function () {
       expect(results).to.equal(1);
     });
     it('GET should return all lodges for a itinerary when respective id is provided', async function () {
+      await addTestCity({ name: 'New York', coordinates: testPoint });
       await addTestItinerary('bob@gmail.com');
       await addTestLodge('bob@gmail.com', 'This is a test title');
       await addTestLodge('bob@gmail.com', 'This is a test title');

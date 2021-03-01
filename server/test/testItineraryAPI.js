@@ -5,6 +5,7 @@ const request = require('supertest');
 const chai = require('chai');
 const expect = chai.expect;
 const Users = require('./../models/userSchema');
+const Cities = require('./../models/citySchema');
 const Itineraries = require('./../models/itinerarySchema');
 const app = require('./../app');
 const authMessages = require('./../appMessages/authentication.json');
@@ -17,6 +18,7 @@ const {
   getUserByEmail,
   getItinerary,
   addTestItinerary,
+  addTestCity,
   postWithAuthentication,
   getWithAuthentication,
   deleteWithAuthentication,
@@ -58,6 +60,7 @@ describe('#ItineraryAPI', function () {
     await Users.deleteMany({});
     await addTestUser();
     await addTestUser('bob2@gmail.com', '123');
+    await addTestCity({ name: 'New York', coordinates: testPoint });
     await addTestItinerary('bob@gmail.com');
     token = await getJWT();
   });
@@ -66,14 +69,18 @@ describe('#ItineraryAPI', function () {
   })
 */
   it('POST / should return 201 on succesful itinerary creation', async function () {
+    const city = await Cities.findOne({ name: 'New York' }).exec();
     const response = await postWithAuthentication(`${itineraryApi}`, token, {
       title,
-      city: 'New York',
-      location: testPoint,
+      city: city._id,
     });
     const { data } = response.body;
     expect(data.title).to.equal(title);
     expect(response.status).to.equal(201);
+  });
+
+  it('POST / should return 404 when city does not exist', async function () {
+    const city = await Cities.findOne({});
   });
 
   it('GET /:id should return 200 with the itinerary with specified id', async function () {
@@ -85,7 +92,8 @@ describe('#ItineraryAPI', function () {
     const { data } = response.body;
     expect(response.status).to.equal(200);
     expect(data.title).to.equal(testTitle);
-    expect(data.city).to.equal('New York');
+    const city = await Cities.findById(data.city);
+    expect(city.name).to.equal('New York');
   });
 
   it('GET /:id should return 404 when itinerary does not exist', async function () {
