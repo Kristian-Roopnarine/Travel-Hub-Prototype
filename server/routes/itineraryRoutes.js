@@ -6,6 +6,7 @@ const itineraryController = require('./../controllers/itineraryController');
 const authController = require('./../controllers/authController');
 const itineraryMiddleware = require('./../middleware/itinerary');
 const userMiddleware = require('./../middleware/user');
+const cityMiddleware = require('./../middleware/cities');
 
 router.use('/:itinId/place', placesRouter);
 router.use('/:itinId/lodge', lodgeRouter);
@@ -13,6 +14,7 @@ router
   .route('/')
   .post(
     authController.protect,
+    cityMiddleware.cityExists,
     itineraryMiddleware.setUseridAsCreator,
     itineraryController.createItinerary
   );
