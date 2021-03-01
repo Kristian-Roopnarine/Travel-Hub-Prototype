@@ -7,11 +7,8 @@ const itinerarySchema = mongoose.Schema({
     required: [true, 'Your itinerary needs a title!'],
   },
   city: {
-    type: String,
-    required: true,
-  },
-  location: {
-    type: pointSchema,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Cities',
     required: true,
   },
   creator: {
