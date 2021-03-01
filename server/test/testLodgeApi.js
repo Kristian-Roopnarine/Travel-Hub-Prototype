@@ -69,6 +69,21 @@ describe('# Lodge Api', function () {
       // check that the lodge is associated with the correct itinerary
       expect(itinerary._id.equals(data[0].itinerary)).to.equal(true);
     });
+    it('GET should return 401 when user not logged in', async function () {
+      token = null;
+      await addTestCity({ name: 'New York', coordinates: testPoint });
+      await addTestItinerary('bob@gmail.com');
+      await addTestLodge('bob@gmail.com', 'This is a test title');
+      await addTestLodge('bob@gmail.com', 'This is a test title');
+      const itinerary = await getItinerary();
+      const response = await getWithAuthentication(
+        `${baseUrl}/itinerary/${itinerary._id}/lodge/`,
+        token
+      );
+      const { message, statusCode } = permissionMessages.jwt.noToken;
+      expect(response.status).to.equal(statusCode);
+      expect(response.body.message).to.equal(message);
+    });
     it('POST should return 201 on succesfull lodge creation', async function () {
       const response = await postWithAuthentication(
         `${lodgeApi}/`,
@@ -79,6 +94,17 @@ describe('# Lodge Api', function () {
       expect(name).to.equal(testLodge.name);
       expect(response.status).to.equal(201);
       expect(website).to.equal(testLodge.website);
+    });
+    it('POST should return 401 when user not logged in', async function () {
+      token = null;
+      const response = await postWithAuthentication(
+        `${lodgeApi}/`,
+        token,
+        testLodge
+      );
+      const { message, statusCode } = permissionMessages.jwt.noToken;
+      expect(response.status).to.equal(statusCode);
+      expect(response.body.message).to.equal(message);
     });
   });
   describe('/:id ROUTE', function () {
@@ -93,6 +119,23 @@ describe('# Lodge Api', function () {
       expect(name).to.equal('Beautiful Home');
       expect(website).to.equal('https://testinghome.com');
     });
+    it('GET should return 401 when user not logged in', async function () {
+      token = null;
+      const lodge = await getLodge('Beautiful Home');
+      const response = await getWithAuthentication(
+        `${lodgeApi}/${lodge._id}`,
+        token
+      );
+      const { message, statusCode } = permissionMessages.jwt.noToken;
+      expect(response.status).to.equal(statusCode);
+      expect(response.body.message).to.equal(message);
+    });
+    it('GET should return 404 when lodge could not be found', async function () {
+      const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
+      const response = await getWithAuthentication(`${lodgeApi}/${id}`, token);
+      expect(response.status).to.equal(404);
+      expect(response.body.message).to.equal('That document does not exist.');
+    });
     it('DELETE should return 204 when deleting a lodge entry', async function () {
       const lodge = await getLodge('Beautiful Home');
       const response = await deleteWithAuthentication(
@@ -100,6 +143,15 @@ describe('# Lodge Api', function () {
         token
       );
       expect(response.status).to.equal(204);
+    });
+    it('DELETE should return 404 when lodge could not be found', async function () {
+      const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
+      const response = await deleteWithAuthentication(
+        `${lodgeApi}/${id}`,
+        token
+      );
+      expect(response.status).to.equal(404);
+      expect(response.body.message).to.equal('That document does not exist.');
     });
     it('PATCH should return 200 and updated item when changing a lodge entry', async function () {
       const lodge = await getLodge('Beautiful Home');

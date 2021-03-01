@@ -79,8 +79,24 @@ describe('#ItineraryAPI', function () {
     expect(response.status).to.equal(201);
   });
 
+  it('POST / should return 401 when user is not signed in', async function () {
+    token = null;
+    const city = await Cities.findOne({ name: 'New York' }).exec();
+    const response = await postWithAuthentication(`${itineraryApi}`, token, {
+      title,
+      city: city._id,
+    });
+    const { message, statusCode } = permissionMessages.jwt.noToken;
+    expect(response.status).to.equal(statusCode);
+    expect(response.body.message).to.equal(message);
+  });
   it('POST / should return 404 when city does not exist', async function () {
-    const city = await Cities.findOne({});
+    const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
+    const response = await postWithAuthentication(`${itineraryApi}`, token, {
+      title,
+      city: id,
+    });
+    expect(response.status).to.equal(404);
   });
 
   it('GET /:id should return 200 with the itinerary with specified id', async function () {
@@ -94,6 +110,17 @@ describe('#ItineraryAPI', function () {
     expect(data.title).to.equal(testTitle);
     const city = await Cities.findById(data.city);
     expect(city.name).to.equal('New York');
+  });
+  it('GET /:id should return 401 when user is not signed in', async function () {
+    token = null;
+    const itinerary = await getItinerary();
+    const response = await getWithAuthentication(
+      `${itineraryApi}/${itinerary._id}`,
+      token
+    );
+    const { message, statusCode } = permissionMessages.jwt.noToken;
+    expect(response.status).to.equal(statusCode);
+    expect(response.body.message).to.equal(message);
   });
 
   it('GET /:id should return 404 when itinerary does not exist', async function () {
@@ -117,6 +144,30 @@ describe('#ItineraryAPI', function () {
     expect(response.status).to.equal(204);
   });
 
+  it('DELETE /:id should return 401 when user is not signed in', async function () {
+    token = null;
+    const itinerary = await getItinerary();
+    const response = await deleteWithAuthentication(
+      `${itineraryApi}/${itinerary._id}`,
+      token
+    );
+    const { message, statusCode } = permissionMessages.jwt.noToken;
+    expect(response.status).to.equal(statusCode);
+    expect(response.body.message).to.equal(message);
+  });
+
+  it('DELETE /:id should return 404 when user is not a creator', async function () {
+    token = await getJWT('bob2@gmail.com', '1234');
+    const itinerary = await getItinerary();
+    const response = await deleteWithAuthentication(
+      `${itineraryApi}/${itinerary._id}`,
+      token
+    );
+    const { message, statusCode } = permissionMessages.notAuthorized;
+    expect(response.status).to.equal(statusCode);
+    expect(response.body.message).to.equal(message);
+  });
+
   it('DELETE /:id should return 404 when itinerary does not exist', async function () {
     const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
     const response = await deleteWithAuthentication(
@@ -128,6 +179,7 @@ describe('#ItineraryAPI', function () {
     expect(response.status).to.equal(statusCode);
     expect(body.message).to.equal(message);
   });
+
   it('GET /:id/join should add member to itinerary with :id', async function () {
     await addTestUser('bob2@gmail.com', '1234');
     token = await getJWT('bob2@gmail.com', '1234');
@@ -140,6 +192,17 @@ describe('#ItineraryAPI', function () {
     expect(response.status).to.equal(200);
     expect(data.members.length).to.equal(1);
     expect(message).to.equal('You have been added to this trip');
+  });
+  it('GET /:id/join should return 401 when user is not signed in', async function () {
+    token = null;
+    const itinerary = await getItinerary();
+    const response = await getWithAuthentication(
+      `${itineraryApi}/${itinerary._id}/join`,
+      token
+    );
+    const { message, statusCode } = permissionMessages.jwt.noToken;
+    expect(response.status).to.equal(statusCode);
+    expect(response.body.message).to.equal(message);
   });
   it('GET /:id/join should return 400 if member is already part of trip', async function () {
     await addTestUser('bob2@gmail.com', '1234');
@@ -195,6 +258,17 @@ describe('#ItineraryAPI', function () {
     expect(response.status).to.equal(statusCode);
     expect(response.body.message).to.equal(message);
     expect(data.members.length).to.equal(1);
+  });
+  it('POST /:id/members should return 500 if member does not exist', async function () {
+    const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
+    const itinerary = await getItinerary();
+    var url = `${itineraryApi}/${itinerary._id}/members`;
+    const response = await postWithAuthentication(url, token, {
+      members: [id],
+    });
+    const { message, statusCode } = itineraryMessages.addMembers.fail;
+    expect(response.status).to.equal(statusCode);
+    expect(response.body.message).to.equal(message);
   });
 
   it('POST /:id/members should return 202 on successfully adding multiple members to the itinerary', async function () {
@@ -262,6 +336,20 @@ describe('#ItineraryAPI', function () {
     var url = `${itineraryApi}/${itinerary._id}/members/${member._id}`;
     const response = await deleteWithAuthentication(url, token);
     expect(response.status).to.equal(204);
+  });
+  it('DELETE /:id/members/:memId should return 401 when unauthorized user tries to add members to itinerary', async function () {
+    token = await getJWT('bob2@gmail.com');
+    // find the itinerary id to send to the backend
+    const itinerary = await getItinerary();
+    var url = `${itineraryApi}/${itinerary._id}/members`;
+    const { message, statusCode } = permissionMessages.notAuthorized;
+    const member = await getUserByEmail('bob@gmail.com');
+    const res = await postWithAuthentication(url, token, {
+      members: [member._id],
+    });
+    const { body } = res;
+    expect(body.message).to.equal(message);
+    expect(res.status).to.equal(statusCode);
   });
   it('DELETE /:id/members/:memId should return 404 when itinerary does not exist', async function () {
     const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
