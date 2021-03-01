@@ -1,4 +1,5 @@
 const Itineraries = require('./../models/itinerarySchema');
+const Users = require('./../models/userSchema');
 const AppError = require('./../utils/appError');
 const asyncCatchWrapper = require('./../utils/asyncCatchWrapper');
 const itineraryMessages = require('./../appMessages/itinerary.json');
@@ -37,6 +38,13 @@ exports.addMember = asyncCatchWrapper(async (req, res, next) => {
   const { id } = req.params;
   const { members } = req.body;
   // this is the itinerary
+  for (const member of members) {
+    let mem = await Users.findById(member).exec();
+    if (!mem) {
+      const { message, statusCode } = itineraryMessages.addMembers.fail;
+      return next(new AppError(message, statusCode));
+    }
+  }
   const itinerary = await Itineraries.findByIdAndUpdate(
     id,
     { $push: { members: members } },

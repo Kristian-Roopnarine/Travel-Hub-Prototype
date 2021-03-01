@@ -75,6 +75,25 @@ describe('# Places Api', function () {
       // check that the place is associated with the correct itinerary
       expect(itinerary._id.equals(data[0].itinerary)).to.equal(true);
     });
+    it('GET should return 401 when user not logged in', async function () {
+      await addTestCity({ name: 'New York', coordinates: testPoint });
+      await addTestItinerary('bob@gmail.com');
+      await addTestPlace('bob@gmail.com', 'restaurant', 'This is a test title');
+      await addTestPlace(
+        'bob@gmail.com',
+        'tourist_attraction',
+        'This is a test title'
+      );
+      const itinerary = await getItinerary();
+      token = null;
+      const response = await getWithAuthentication(
+        `${baseUrl}/itinerary/${itinerary._id}/place/`,
+        token
+      );
+      const { message, statusCode } = permissionMessages.jwt.noToken;
+      expect(response.status).to.equal(statusCode);
+      expect(response.body.message).to.equal(message);
+    });
     it('POST should return 201 on succesfull restaurant creation', async function () {
       const response = await postWithAuthentication(
         `${placeApi}/`,
@@ -102,6 +121,17 @@ describe('# Places Api', function () {
       expect(website).to.equal(testAttraction.website);
       expect(category).to.equal('tourist_attraction');
     });
+    it('POST should return 401 when user not logged in', async function () {
+      token = null;
+      const response = await postWithAuthentication(
+        `${placeApi}/`,
+        token,
+        testPlace
+      );
+      const { message, statusCode } = permissionMessages.jwt.noToken;
+      expect(response.status).to.equal(statusCode);
+      expect(response.body.message).to.equal(message);
+    });
   });
   describe('/:id ROUTE', function () {
     it('GET should return 200 on successfull place query', async function () {
@@ -115,6 +145,23 @@ describe('# Places Api', function () {
       expect(name).to.equal("Dani's house of pizza");
       expect(website).to.equal('https://danishouseofpizza.com');
     });
+    it('GET should return 404 when place does not exist', async function () {
+      const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
+      const response = await getWithAuthentication(`${placeApi}/${id}`, token);
+      expect(response.status).to.equal(404);
+      expect(response.body.message).to.equal('That document does not exist.');
+    });
+    it('GET should return 401 when user not logged in', async function () {
+      token = null;
+      const place = await getPlaces("Dani's house of pizza");
+      const response = await getWithAuthentication(
+        `${placeApi}/${place._id}`,
+        token
+      );
+      const { message, statusCode } = permissionMessages.jwt.noToken;
+      expect(response.status).to.equal(statusCode);
+      expect(response.body.message).to.equal(message);
+    });
     it('DELETE should return 204 when deleting a place entry', async function () {
       const place = await getPlaces("Dani's house of pizza");
       const response = await deleteWithAuthentication(
@@ -122,6 +169,26 @@ describe('# Places Api', function () {
         token
       );
       expect(response.status).to.equal(204);
+    });
+    it('DELETE should return 404 when place does not exist', async function () {
+      const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
+      const response = await deleteWithAuthentication(
+        `${placeApi}/${id}`,
+        token
+      );
+      expect(response.status).to.equal(404);
+      expect(response.body.message).to.equal('That document does not exist.');
+    });
+    it('DELETE should return 401 when user not logged in', async function () {
+      token = null;
+      const place = await getPlaces("Dani's house of pizza");
+      const response = await deleteWithAuthentication(
+        `${placeApi}/${place._id}`,
+        token
+      );
+      const { message, statusCode } = permissionMessages.jwt.noToken;
+      expect(response.status).to.equal(statusCode);
+      expect(response.body.message).to.equal(message);
     });
     it('PATCH should return 200 and updated item when changing a place entry', async function () {
       const place = await getPlaces("Dani's house of pizza");
