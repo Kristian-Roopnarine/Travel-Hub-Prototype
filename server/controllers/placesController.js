@@ -12,7 +12,6 @@ exports.getAllPlaces = asyncCatchWrapper(async (req, res, next) => {
   let filter = {};
 
   if (req.params.itinId) filter = { itinerary: req.params.itinId };
-  console.log({ filter });
   const places = await Places.find(filter).exec();
 
   res.status(200).json({
