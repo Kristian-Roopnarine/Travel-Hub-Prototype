@@ -1,4 +1,5 @@
 const AppError = require('./../utils/appError');
+const permissionMessages = require('./../appMessages/permissions.json');
 
 const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}`;
@@ -18,7 +19,8 @@ const handleValidationErrorDB = (err) => {
 };
 
 const handleJWTError = (err) => {
-  return new AppError('Invalid token. Please login again', 401);
+  const { message, statusCode } = permissionMessages.jwt.noToken;
+  return new AppError(message, statusCode);
 };
 
 const sendDevError = (err, res) => {
