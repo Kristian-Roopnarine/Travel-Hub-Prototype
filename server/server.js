@@ -1,6 +1,7 @@
 const app = require('./app');
 const mongoose = require('mongoose');
 const config = require('./config');
+const { createDummyData } = require('./dummyData');
 
 process.on('uncaughtException', (err) => {
   console.log('Uncaught exception. Shutting down...');
@@ -15,7 +16,10 @@ mongoose
     useCreateIndex: true,
     useFindAndModify: false,
   })
-  .then(() => console.log('Connection to database successful'));
+  .then(() => {
+    console.log('Connection to database successful');
+    createDummyData();
+  });
 
 const server = app.listen(port, () => {
   console.log(`Listening on port ${port}`);
