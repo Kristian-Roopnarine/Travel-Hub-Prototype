@@ -21,7 +21,6 @@ const lodgeSchema = mongoose.Schema({
   },
   location: {
     type: pointSchema,
-    required: true,
   },
   googleMapUrl: mongoose.SchemaTypes.Url,
   website: mongoose.SchemaTypes.Url,
