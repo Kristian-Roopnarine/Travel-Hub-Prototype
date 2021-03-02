@@ -27,7 +27,7 @@ const createSendToken = (user, statusCode, res) => {
   res
     .status(statusCode)
     .cookie('jwt', token, cookieOptions)
-    .redirect(`${config.app.url}/map`);
+    .redirect(`${config.app.url}/home`);
 };
 
 exports.login = asyncCatchWrapper(async (req, res, next) => {
