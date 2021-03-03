@@ -1,10 +1,25 @@
-import React from 'react';
-import Navbar from './../components/Navbar';
+import React, { useEffect } from 'react';
+import { Redirect } from 'react-router-dom';
+const { REACT_APP_SERVER_URL } = process.env;
 
-function Home() {
+function Home({ loggedIn, setLoggedIn }) {
+  useEffect(() => {
+    (async () => {
+      const response = await fetch(`${REACT_APP_SERVER_URL}/auth/loggedIn`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      const userStatus = response.status === 200;
+      setLoggedIn(userStatus);
+    })();
+  }, []);
+
+  if (!loggedIn) {
+    return <Redirect to="/" />;
+  }
   return (
     <>
-      <Navbar />
+      <h2>Home page</h2>
     </>
   );
 }
