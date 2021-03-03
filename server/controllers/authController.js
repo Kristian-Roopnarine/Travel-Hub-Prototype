@@ -38,6 +38,13 @@ exports.login = asyncCatchWrapper(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+exports.isLoggedIn = asyncCatchWrapper(async (req, res, next) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Logged in',
+  });
+});
+
 exports.protect = asyncCatchWrapper(async (req, res, next) => {
   // Get token and check if it's there
   let token;
