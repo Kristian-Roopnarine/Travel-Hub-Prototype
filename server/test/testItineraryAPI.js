@@ -64,10 +64,12 @@ describe('#ItineraryAPI', function () {
     await addTestItinerary('bob@gmail.com');
     token = await getJWT();
   });
-  /*
-  it('GET / should return all itineraries a user is part of', async function(){
-  })
-*/
+  it('GET / should return all itineraries a user is part of', async function () {
+    const response = await getWithAuthentication(`${itineraryApi}`, token);
+    const { data } = response.body;
+    expect(response.status).to.equal(200);
+    expect(data.length).to.equal(1);
+  });
   it('POST / should return 201 on succesful itinerary creation', async function () {
     const city = await Cities.findOne({ name: 'New York' }).exec();
     const response = await postWithAuthentication(`${itineraryApi}`, token, {
