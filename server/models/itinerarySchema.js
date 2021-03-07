@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const pointSchema = require('./pointSchema');
 
 const itinerarySchema = mongoose.Schema({
   title: {
