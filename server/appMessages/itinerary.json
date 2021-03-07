@@ -1,4 +1,8 @@
 {
+  "notAuthorized": {
+    "message": "Cannot perform this action",
+    "statusCode": 404
+  },
   "createOne": {
     "success": {
       "message": "Created your itinerary",

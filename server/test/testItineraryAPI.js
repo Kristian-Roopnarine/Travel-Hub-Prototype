@@ -169,19 +169,6 @@ describe('#ItineraryAPI', function () {
     expect(response.status).to.equal(statusCode);
     expect(response.body.message).to.equal(message);
   });
-
-  it('DELETE /:id should return 404 when itinerary does not exist', async function () {
-    const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
-    const response = await deleteWithAuthentication(
-      `${itineraryApi}/${id}`,
-      token
-    );
-    const { body } = response;
-    const { message, statusCode } = itineraryMessages.doesNotExist;
-    expect(response.status).to.equal(statusCode);
-    expect(body.message).to.equal(message);
-  });
-
   it('GET /:id/join should add member to itinerary with :id', async function () {
     await addTestUser('bob2@gmail.com', '1234');
     token = await getJWT('bob2@gmail.com', '1234');
@@ -299,22 +286,6 @@ describe('#ItineraryAPI', function () {
     expect(data.members.length).to.equal(4);
   });
 
-  it('POST /:id/members should return 404 when itinerary does not exist', async function () {
-    const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
-    const member = await getUserByEmail('bob2@gmail.com');
-    const response = await postWithAuthentication(
-      `${itineraryApi}/${id}/members`,
-      token,
-      {
-        members: [member._id],
-      }
-    );
-    const { body } = response;
-    const { message, statusCode } = itineraryMessages.doesNotExist;
-    expect(response.status).to.equal(statusCode);
-    expect(body.message).to.equal(message);
-  });
-
   it('POST /:id/members should return 401 when unauthorized user tries to add members to itinerary', async function () {
     token = await getJWT('bob2@gmail.com');
     // find the itinerary id to send to the backend
@@ -352,16 +323,6 @@ describe('#ItineraryAPI', function () {
     const { body } = res;
     expect(body.message).to.equal(message);
     expect(res.status).to.equal(statusCode);
-  });
-  it('DELETE /:id/members/:memId should return 404 when itinerary does not exist', async function () {
-    const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
-    const member = await getUserByEmail('bob2@gmail.com');
-    var url = `${itineraryApi}/${id}/members/${member._id}`;
-    const response = await deleteWithAuthentication(url, token);
-    const { body } = response;
-    const { message, statusCode } = itineraryMessages.doesNotExist;
-    expect(response.status).to.equal(statusCode);
-    expect(body.message).to.equal(message);
   });
   it('DELETE /:id/members/:memId should return 404 when member does not exist', async function () {
     const itinerary = await getItinerary();

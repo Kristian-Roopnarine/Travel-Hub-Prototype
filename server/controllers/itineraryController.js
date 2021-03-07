@@ -23,17 +23,7 @@ exports.getAllItineraries = asyncCatchWrapper(async (req, res, next) => {
   const { user } = req;
   const itineraries = await Itineraries.find({
     $or: [{ creator: user._id }, { members: { $in: [user._id] } }],
-  })
-    .populate({
-      path: 'creator',
-      select: 'firstName',
-    })
-    .populate('city')
-    .populate({
-      path: 'members',
-      select: 'firstName',
-    })
-    .exec();
+  }).exec();
   res.status(200).json({
     status: 'success',
     data: itineraries,

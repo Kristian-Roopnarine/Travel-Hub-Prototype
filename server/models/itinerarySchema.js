@@ -25,6 +25,18 @@ const itinerarySchema = mongoose.Schema({
 });
 
 // think of logic for joinurl
+itinerarySchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'creator',
+    select: 'firstName',
+  })
+    .populate('city')
+    .populate({
+      path: 'members',
+      select: 'firstName',
+    });
+  next();
+});
 
 const Itineraries = mongoose.model('Itineraries', itinerarySchema);
 
