@@ -3,7 +3,7 @@ import { FaMapMarkerAlt } from 'react-icons/fa';
 import GoogleMapReact from 'google-map-react';
 import SearchBox from './SearchBox';
 import GoogleMapPlaceCard from './GoogleMapPlaceCard';
-import axios from 'axios';
+import { useParams } from 'react-router-dom';
 const { REACT_APP_MAPS_KEY } = process.env;
 
 const defaultCenter = { lat: 40.7128, lng: -74.006 };
@@ -11,6 +11,7 @@ const defaultCenter = { lat: 40.7128, lng: -74.006 };
 const zoom = 11;
 
 function GoogleMaps() {
+  const { id } = useParams();
   const [map, setMap] = useState(null);
   const [googlemaps, setGooglemaps] = useState(null);
   const [apiReady, setApiReady] = useState(false);
@@ -60,7 +61,7 @@ function GoogleMaps() {
 
       <div className="absolute px-2 bottom-0">
         {currentPlace.hasOwnProperty('name') ? (
-          <GoogleMapPlaceCard place={currentPlace} />
+          <GoogleMapPlaceCard place={currentPlace} itineraryId={id} />
         ) : null}
       </div>
     </div>

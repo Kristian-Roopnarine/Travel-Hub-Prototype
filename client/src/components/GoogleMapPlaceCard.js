@@ -3,8 +3,9 @@ import { FaMapMarkerAlt } from 'react-icons/fa';
 import { BiWorld } from 'react-icons/bi';
 import { AiFillPhone } from 'react-icons/ai';
 import { MdAttachMoney } from 'react-icons/md';
+const { REACT_APP_SERVER_URL } = process.env;
 
-function GoogleMapPlaceCard({ place }) {
+function GoogleMapPlaceCard({ place, itineraryId }) {
   const {
     name,
     website,
@@ -12,6 +13,9 @@ function GoogleMapPlaceCard({ place }) {
     photos,
     price_level,
     formatted_phone_number,
+    category,
+    lat,
+    lng,
     weekday_text,
   } = place;
   const priceIcons = [];
@@ -20,12 +24,50 @@ function GoogleMapPlaceCard({ place }) {
   }
 
   const photoUrl = photos[0].getUrl();
+
+  const addToItinerary = async () => {
+    let url = `${REACT_APP_SERVER_URL}/itinerary/${itineraryId}/place`;
+    let data = {
+      name,
+      website,
+      address,
+      photoUrl,
+      location: { type: 'Point', coordinates: [lng, lat] },
+      category,
+    };
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(data),
+        mode: 'cors',
+        credentials: 'include',
+      });
+      const { data: placeData } = await response.json();
+      console.log({ placeData });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="max-h-52 justify-between flex bg-white rounded w-full">
       <div className="flex flex-col space-y-4 py-4 px-2 font-sans">
-        <h3 className="flex items-center font-bold space-x-2">
+        <h3 className="flex items-center font-bold">
           {name} {priceIcons}
         </h3>
+        <div>
+          <button
+            type="button"
+            onClick={addToItinerary}
+            className="bg-indigo-300 h-full px-1 rounded"
+          >
+            <span className="text-xs font-sans text-white">Add to trip</span>
+          </button>
+        </div>
         <div className="flex space-x-2">
           <FaMapMarkerAlt color={'grey'} />
           <p className="text-xs">{address}</p>
@@ -43,8 +85,9 @@ function GoogleMapPlaceCard({ place }) {
           <p className="text-xs">{formatted_phone_number} </p>
         </div>
       </div>
-
-      <img src={photoUrl} className="h-auto w-1/3 rounded" />
+      <div className="w-1/3">
+        <img className="object-cover w-full h-full" src={photoUrl} />
+      </div>
     </div>
   );
 }
