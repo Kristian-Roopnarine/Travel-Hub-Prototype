@@ -12,7 +12,7 @@ function ItineraryDetail({ title, city, id, members }) {
         <div className="w-20">
           <CarryOn />
         </div>
-        <div className="flex w-4/6 flex-col space-y-2 max-w-xs py-6">
+        <div className="flex w-4/6 flex-col space-y-4 max-w-xs py-4">
           <div>
             <Link to={`/itinerary/${id}`}>
               <p className="font-mono text-xl">{title}</p>

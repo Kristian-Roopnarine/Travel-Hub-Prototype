@@ -3,10 +3,12 @@ import PropTypes from 'prop-types';
 
 import Itineraries from './Itineraries';
 
-function ListDisplay({ headerText, button, children }) {
+function ListDisplay({ headerText, button, backgroundColor, children }) {
   return (
     <>
-      <div className="flex flex-col justify-center bg-yellow-100 rounded-t-lg">
+      <div
+        className={`flex flex-col justify-center ${backgroundColor} rounded-t-lg`}
+      >
         <div className="text-left font-semibold py-4 text-2xl px-2 border-b-2 border-yellow-200">
           {headerText}
         </div>
