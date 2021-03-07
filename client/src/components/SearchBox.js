@@ -1,7 +1,14 @@
 import React, { useCallback, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
-const SearchBox = ({ maps, addPlace, placeholder, map, setCenter }) => {
+const SearchBox = ({
+  maps,
+  setCurrentPlace,
+  addPlace,
+  placeholder,
+  map,
+  setCenter,
+}) => {
   const input = useRef(null);
   const searchBox = useRef(null);
 
@@ -10,8 +17,26 @@ const SearchBox = ({ maps, addPlace, placeholder, map, setCenter }) => {
       const result = searchBox.current.getPlaces()[0];
       const lat = result.geometry.location.lat();
       const lng = result.geometry.location.lng();
-      const { name, website, vicinity, url } = result;
-      addPlace([{ name, website, vicinity, url, lat, lng }]);
+      const {
+        weekday_text,
+        price_level,
+        formatted_phone_number,
+        name,
+        website,
+        photos,
+        vicinity: address,
+        url,
+      } = result;
+      addPlace([{ name, website, address, url, lat, lng }]);
+      setCurrentPlace({
+        name,
+        weekday_text,
+        price_level,
+        formatted_phone_number,
+        website,
+        address,
+        photos,
+      });
       setCenter({ lat, lng });
     }
   }, [addPlace, searchBox]);
@@ -28,7 +53,12 @@ const SearchBox = ({ maps, addPlace, placeholder, map, setCenter }) => {
     };
   }, [maps, handleOnPlacesChanged]);
   return (
-    <input ref={input} placeholder="Enter your location here" type="text" />
+    <input
+      className="border rounded p-1 m-1 w-96"
+      ref={input}
+      placeholder="Enter your location here"
+      type="text"
+    />
   );
 };
 
