@@ -26,7 +26,11 @@ const SearchBox = ({
         photos,
         vicinity: address,
         url,
+        types,
       } = result;
+      const category = types.includes('tourist_attraction')
+        ? 'tourist_attraction'
+        : 'restaurant';
       addPlace([{ name, website, address, url, lat, lng }]);
       setCurrentPlace({
         name,
@@ -36,6 +40,9 @@ const SearchBox = ({
         website,
         address,
         photos,
+        lat,
+        lng,
+        category,
       });
       setCenter({ lat, lng });
     }
