@@ -21,14 +21,21 @@ function Home({ loggedIn, setLoggedIn }) {
 
   return (
     <>
-      <h2>Home page</h2>
-      <div className="flex mx-auto justify-around">
+      <div className="flex mx-auto justify-evenly">
         <div className="w-1/3">
-          <ListDisplay headerText={'Upcoming Trips'}>
+          <ListDisplay
+            headerText={'Upcoming Trips'}
+            backgroundColor="bg-yellow-100"
+          >
             <Itineraries />
           </ListDisplay>
         </div>
-        <div className="w-1/3">Your travel guides here</div>
+        <div className="w-1/3">
+          <ListDisplay
+            headerText={'Your Travel Guides'}
+            backgroundColor="bg-yellow-100"
+          ></ListDisplay>
+        </div>
       </div>
     </>
   );
