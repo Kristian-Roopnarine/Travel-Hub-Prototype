@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Home from './pages/Home';
 import Landing from './pages/Landing';
 import Itinerary from './pages/Itinerary';
+import ItineraryForm from './components/ItineraryForm';
 import Profile from './pages/Profile';
 import TravelGuides from './pages/TravelGuides';
 import Navbar from './components/Navbar';
@@ -20,6 +21,7 @@ function App() {
         <Route path="/home">
           <Home loggedIn={isLoggedIn} setLoggedIn={setLoggedIn} />
         </Route>
+        <Route path="/itinerary/create" component={ItineraryForm} />
         <Route path="/itinerary/:id" component={Itinerary} />
         <Route path="/profile" component={Profile} />
         <Route path="/travel-guides" component={TravelGuides} />

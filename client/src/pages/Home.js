@@ -1,8 +1,16 @@
 import React, { useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import ListDisplay from './../components/ListDisplay';
 import Itineraries from './../components/Itineraries';
 const { REACT_APP_SERVER_URL } = process.env;
+
+function CreateItineraryButton() {
+  return (
+    <div className="p-2 mr-1 text-xs bg-red-400 h-full rounded">
+      <Link to="/itinerary/create">Create</Link>
+    </div>
+  );
+}
 
 function Home({ loggedIn, setLoggedIn }) {
   useEffect(() => {
@@ -26,6 +34,7 @@ function Home({ loggedIn, setLoggedIn }) {
           <ListDisplay
             headerText={'Upcoming Trips'}
             backgroundColor="bg-yellow-100"
+            createLink={<CreateItineraryButton />}
           >
             <Itineraries />
           </ListDisplay>
