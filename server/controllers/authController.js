@@ -27,7 +27,7 @@ const createSendToken = (user, statusCode, res) => {
   res
     .status(statusCode)
     .cookie('jwt', token, cookieOptions)
-    .redirect(`${config.app.url}/map`);
+    .redirect(`${config.app.url}/home`);
 };
 
 exports.login = asyncCatchWrapper(async (req, res, next) => {
@@ -36,6 +36,13 @@ exports.login = asyncCatchWrapper(async (req, res, next) => {
     return next(new AppError('Error during login', 500));
   }
   createSendToken(user, 200, res);
+});
+
+exports.isLoggedIn = asyncCatchWrapper(async (req, res, next) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Logged in',
+  });
 });
 
 exports.protect = asyncCatchWrapper(async (req, res, next) => {

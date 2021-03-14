@@ -8,12 +8,11 @@ const itineraryMessages = require('./../appMessages/itinerary.json');
 exports.isOwner = asyncCatchWrapper(async (req, res, next) => {
   const { user } = req;
   const { id } = req.params;
-  const itinerary = await Itineraries.findById(id).exec();
+  const itinerary = await Itineraries.findOne({
+    creator: user._id,
+    _id: id,
+  }).exec();
   if (!itinerary) {
-    const { message, statusCode } = itineraryMessages.doesNotExist;
-    return next(new AppError(message, statusCode));
-  }
-  if (!user._id.equals(itinerary.creator)) {
     const { message, statusCode } = permissionsMessages.notAuthorized;
     return next(new AppError(message, statusCode));
   }
@@ -29,10 +28,11 @@ exports.setUseridAsCreator = asyncCatchWrapper(async (req, res, next) => {
 exports.checkIfCurrentMember = asyncCatchWrapper(async (req, res, next) => {
   const { id } = req.params;
   const { user } = req;
-  const itinerary = await Itineraries.findById(id).exec();
-  const isCreator = itinerary.creator.equals(user._id);
-  const isMember = itinerary.members.includes(user._id);
-  if (isCreator || isMember) {
+  const itinerary = await Itineraries.findOne({
+    $or: [{ creator: user._id }, { members: { $in: [user._id] } }],
+    _id: id,
+  }).exec();
+  if (itinerary) {
     return next(new AppError('You are already part of this trip', 400));
   }
   next();

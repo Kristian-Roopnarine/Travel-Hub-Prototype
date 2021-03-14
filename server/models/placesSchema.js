@@ -22,6 +22,7 @@ const placesSchema = mongoose.Schema({
   },
   googleMapUrl: mongoose.SchemaTypes.Url,
   website: mongoose.SchemaTypes.Url,
+  photoUrl: String,
   address: String,
   category: {
     type: String,

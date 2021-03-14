@@ -64,10 +64,12 @@ describe('#ItineraryAPI', function () {
     await addTestItinerary('bob@gmail.com');
     token = await getJWT();
   });
-  /*
-  it('GET / should return all itineraries a user is part of', async function(){
-  })
-*/
+  it('GET / should return all itineraries a user is part of', async function () {
+    const response = await getWithAuthentication(`${itineraryApi}`, token);
+    const { data } = response.body;
+    expect(response.status).to.equal(200);
+    expect(data.length).to.equal(1);
+  });
   it('POST / should return 201 on succesful itinerary creation', async function () {
     const city = await Cities.findOne({ name: 'New York' }).exec();
     const response = await postWithAuthentication(`${itineraryApi}`, token, {
@@ -167,19 +169,6 @@ describe('#ItineraryAPI', function () {
     expect(response.status).to.equal(statusCode);
     expect(response.body.message).to.equal(message);
   });
-
-  it('DELETE /:id should return 404 when itinerary does not exist', async function () {
-    const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
-    const response = await deleteWithAuthentication(
-      `${itineraryApi}/${id}`,
-      token
-    );
-    const { body } = response;
-    const { message, statusCode } = itineraryMessages.doesNotExist;
-    expect(response.status).to.equal(statusCode);
-    expect(body.message).to.equal(message);
-  });
-
   it('GET /:id/join should add member to itinerary with :id', async function () {
     await addTestUser('bob2@gmail.com', '1234');
     token = await getJWT('bob2@gmail.com', '1234');
@@ -297,22 +286,6 @@ describe('#ItineraryAPI', function () {
     expect(data.members.length).to.equal(4);
   });
 
-  it('POST /:id/members should return 404 when itinerary does not exist', async function () {
-    const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
-    const member = await getUserByEmail('bob2@gmail.com');
-    const response = await postWithAuthentication(
-      `${itineraryApi}/${id}/members`,
-      token,
-      {
-        members: [member._id],
-      }
-    );
-    const { body } = response;
-    const { message, statusCode } = itineraryMessages.doesNotExist;
-    expect(response.status).to.equal(statusCode);
-    expect(body.message).to.equal(message);
-  });
-
   it('POST /:id/members should return 401 when unauthorized user tries to add members to itinerary', async function () {
     token = await getJWT('bob2@gmail.com');
     // find the itinerary id to send to the backend
@@ -350,16 +323,6 @@ describe('#ItineraryAPI', function () {
     const { body } = res;
     expect(body.message).to.equal(message);
     expect(res.status).to.equal(statusCode);
-  });
-  it('DELETE /:id/members/:memId should return 404 when itinerary does not exist', async function () {
-    const id = mongoose.Types.ObjectId('zzzzzzzzzzzz');
-    const member = await getUserByEmail('bob2@gmail.com');
-    var url = `${itineraryApi}/${id}/members/${member._id}`;
-    const response = await deleteWithAuthentication(url, token);
-    const { body } = response;
-    const { message, statusCode } = itineraryMessages.doesNotExist;
-    expect(response.status).to.equal(statusCode);
-    expect(body.message).to.equal(message);
   });
   it('DELETE /:id/members/:memId should return 404 when member does not exist', async function () {
     const itinerary = await getItinerary();

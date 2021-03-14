@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const authController = require('./../controllers/authController');
 const passport = require('passport');
-
+router
+  .route('/loggedIn')
+  .get(authController.protect, authController.isLoggedIn);
 router
   .route('/google')
   .get(passport.authenticate('google', { scope: ['profile', 'email'] }));

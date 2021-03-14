@@ -9,6 +9,7 @@ const authRouter = require('./routes/authRoutes');
 const itineraryRouter = require('./routes/itineraryRoutes');
 const placesRouter = require('./routes/placesRoutes');
 const lodgeRouter = require('./routes/lodgeRoutes');
+const cityRouter = require('./routes/cityRoutes');
 const { protect } = require('./controllers/authController');
 const passport = require('passport');
 require('./passport-google');
@@ -38,6 +39,7 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/itinerary', itineraryRouter);
 app.use('/api/v1/place', placesRouter);
 app.use('/api/v1/lodge', lodgeRouter);
+app.use('/api/v1/city', cityRouter);
 
 app.all('*', (req, res, next) => {
   next(

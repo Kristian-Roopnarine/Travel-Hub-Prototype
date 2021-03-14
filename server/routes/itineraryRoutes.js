@@ -12,6 +12,8 @@ router.use('/:itinId/place', placesRouter);
 router.use('/:itinId/lodge', lodgeRouter);
 router
   .route('/')
+  // think about not protecting this, but only return itineraries for user if user in req
+  .get(authController.protect, itineraryController.getAllItineraries)
   .post(
     authController.protect,
     cityMiddleware.cityExists,

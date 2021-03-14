@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const pointSchema = require('./pointSchema');
-
+const Countries = require('./countrySchema');
 const citySchema = mongoose.Schema({
   name: {
     type: String,
@@ -12,10 +12,17 @@ const citySchema = mongoose.Schema({
   },
   country: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Countries',
+    ref: Countries,
   },
   iso2: String,
   iso3: String,
+  stateName: String,
+  stateID: String,
+  cityID: String,
+});
+citySchema.pre(/^find/, function (next) {
+  this.populate('country');
+  next();
 });
 
 const Cities = mongoose.model('Cities', citySchema);
